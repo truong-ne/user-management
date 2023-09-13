@@ -5,14 +5,19 @@ import { Token } from "./entities/token.entity";
 import { UserController } from "./controllers/user.controller";
 import { UserService } from "./services/user.service";
 import { UserMiddleware } from "./middleware/user.middleware";
-import { JwtService } from "@nestjs/jwt";
+import { JwtModule } from "@nestjs/jwt";
+import { JwtStrategy } from "./jwt.strategy";
 
 @Module({
     imports: [
+        JwtModule.register({
+            global: true,
+            secret: process.env.JWT_SECRET,
+        }),
         TypeOrmModule.forFeature([User, Token])
     ],
     controllers: [UserController],
-    providers: [UserService, JwtService],
+    providers: [UserService, JwtStrategy],
     exports: [UserService]
 })
 export class UserModule implements NestModule{

@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from "@nestjs/common";
+import { Injectable, NestMiddleware, Req } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { NextFunction, Request, Response } from "express";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -15,7 +15,7 @@ export class UserMiddleware implements NestMiddleware {
     ) {
     }
 
-    async use(req: Request, res: Response, next: (error?: NextFunction) => void) {
+    async use(@Req() req, res: Response, next: (error?: NextFunction) => void) {
         const path = req.route?.path;
         const refresh_token = req.cookies?.refresh_token
 
@@ -26,7 +26,14 @@ export class UserMiddleware implements NestMiddleware {
             return
         }
         
-        const token = await this.tokenRepository.findOne({ where: { 'refresh_token': (refresh_token as string), 'check_valid': true } })
+        const token = await this.tokenRepository.findOne({ where: { 'refresh_token': refresh_token, 'check_valid': true } })
+        if(!token) {
+            const errorMessage = 'Not Found';
+            const httpStatusCode = 404;
+            res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
+            return
+        }
+
         const access_token = token.access_token
 
         const decoded = this.jwtService.verify(access_token)
