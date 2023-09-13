@@ -19,7 +19,7 @@ export class UserMiddleware implements NestMiddleware {
         const path = req.route?.path;
         const refresh_token = req.cookies.refresh_token
         
-        const token = await this.tokenRepository.findOne({ where: { 'refresh_token': refresh_token, 'check_valid': true } })
+        const token = await this.tokenRepository.findOne({ where: { 'refresh_token': (refresh_token as string), 'check_valid': true } })
         const access_token = token.access_token
 
         const decoded = this.jwtService.verify(access_token)

@@ -5,13 +5,14 @@ import { Token } from "./entities/token.entity";
 import { UserController } from "./controllers/user.controller";
 import { UserService } from "./services/user.service";
 import { UserMiddleware } from "./middleware/user.middleware";
+import { JwtService } from "@nestjs/jwt";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([User, Token])
     ],
     controllers: [UserController],
-    providers: [UserService],
+    providers: [UserService, JwtService],
     exports: [UserService]
 })
 export class UserModule implements NestModule{
