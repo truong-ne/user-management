@@ -20,7 +20,7 @@ export class UserMiddleware implements NestMiddleware {
         const refresh_token = req.cookies?.refresh_token
 
         if(refresh_token === undefined){
-            const errorMessage = 'Forbidden';
+            const errorMessage = 'Not Found';
             const httpStatusCode = 402;
             res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
             return
@@ -37,7 +37,7 @@ export class UserMiddleware implements NestMiddleware {
                 next();
             }
             else {
-                const errorMessage = 'Forbidden';
+                const errorMessage = refresh_token;
                 const httpStatusCode = 402;
                 res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
             }
