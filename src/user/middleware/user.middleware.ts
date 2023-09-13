@@ -17,7 +17,14 @@ export class UserMiddleware implements NestMiddleware {
 
     async use(req: Request, res: Response, next: (error?: NextFunction) => void) {
         const path = req.route?.path;
-        const refresh_token = req.cookies.refresh_token
+        const refresh_token = req.cookies?.refresh_token
+
+        if(refresh_token === undefined){
+            const errorMessage = 'Forbidden';
+            const httpStatusCode = 402;
+            res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
+            return
+        }
         
         const token = await this.tokenRepository.findOne({ where: { 'refresh_token': (refresh_token as string), 'check_valid': true } })
         const access_token = token.access_token
