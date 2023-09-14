@@ -9,6 +9,7 @@ export class UserController {
 
     @Get(':id')
     async signup(@Param('id') id: string): Promise<any> {
+        
         return await this.userService.getUserById(id)
     }
 }
