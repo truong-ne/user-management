@@ -36,7 +36,7 @@ export class UserMiddleware implements NestMiddleware {
         }
 
         if(token.access_token !== authHeader) {
-            const errorMessage = 'Forbidden';
+            const errorMessage = 'Forbidden check';
             const httpStatusCode = 403;
             res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
             return
