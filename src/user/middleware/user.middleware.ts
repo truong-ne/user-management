@@ -45,7 +45,7 @@ export class UserMiddleware implements NestMiddleware {
             }
             else {
                 const errorMessage = 'Forbidden';
-                const httpStatusCode = 402;
+                const httpStatusCode = 403;
                 res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
             }
         }
