@@ -51,7 +51,7 @@ export class UserMiddleware implements NestMiddleware {
         }
         else {
             // no path matches
-            const errorMessage = 'Path not found';
+            const errorMessage = path;
             const httpStatusCode = 404;
             res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
         }
