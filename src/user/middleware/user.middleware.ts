@@ -18,10 +18,11 @@ export class UserMiddleware implements NestMiddleware {
     async use(@Req() req, res: Response, next: (error?: NextFunction) => void) {
         const path = req.route?.path;
         const authHeader = req.headers.authorization || req.headers.Authorization || null
+        const access_token = (authHeader as string).split(' ')[1]
         const refresh_token = req.cookies?.refresh_token
 
         if(authHeader === null || refresh_token === undefined){
-            const errorMessage = 'Forbidden auth';
+            const errorMessage = 'Forbidden';
             const httpStatusCode = 403;
             res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
             return
@@ -35,8 +36,8 @@ export class UserMiddleware implements NestMiddleware {
             return
         }
 
-        if(token.access_token !== authHeader) {
-            const errorMessage = token.access_token + authHeader;
+        if(token.access_token !== access_token) {
+            const errorMessage = 'Forbidden';
             const httpStatusCode = 403;
             res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
             return
