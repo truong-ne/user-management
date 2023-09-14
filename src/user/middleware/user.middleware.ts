@@ -17,16 +17,17 @@ export class UserMiddleware implements NestMiddleware {
 
     async use(@Req() req, res: Response, next: (error?: NextFunction) => void) {
         const path = req.route?.path;
+        const authHeader = req.headers.authorization || req.headers.Authorization || null
         const refresh_token = req.cookies?.refresh_token
 
-        if(refresh_token === undefined){
-            const errorMessage = 'Not Found';
-            const httpStatusCode = 404;
+        if(authHeader === null || refresh_token === undefined){
+            const errorMessage = 'Forbidden';
+            const httpStatusCode = 403;
             res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
             return
         }
         
-        const token = await this.tokenRepository.findOne({ where: { 'refresh_token': refresh_token, 'check_valid': true } })
+        const token = await this.tokenRepository.findOne({ where: { 'refresh_token': refresh_token, 'check_valid': true }, relations: ['user'] })
         if(!token) {
             const errorMessage = 'Not Found';
             const httpStatusCode = 404;
@@ -34,13 +35,15 @@ export class UserMiddleware implements NestMiddleware {
             return
         }
 
-        const access_token = token.access_token
-
-        const decoded = this.jwtService.verify(access_token)
-        const user = await this.userRepository.findOne({ where: { 'phone': decoded.phone } })
+        if(token.access_token !== authHeader) {
+            const errorMessage = 'Forbidden';
+            const httpStatusCode = 403;
+            res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
+            return
+        }
 
         if (path === '/user-management/user/:id') {
-            if (req.params.id === user.id) {
+            if (req.params.id === token.user.id) {
                 next();
             }
             else {
