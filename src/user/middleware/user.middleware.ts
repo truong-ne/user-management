@@ -39,7 +39,7 @@ export class UserMiddleware implements NestMiddleware {
         const decoded = this.jwtService.verify(access_token)
         const user = await this.userRepository.findOne({ where: { 'phone': decoded.phone } })
 
-        if (path === "/user-manegement/user/:id") {
+        if (path === '/user-management/user/:id') {
             if (req.params.id === user.id) {
                 next();
             }
