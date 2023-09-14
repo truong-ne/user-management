@@ -21,7 +21,7 @@ export class UserMiddleware implements NestMiddleware {
         const refresh_token = req.cookies?.refresh_token
 
         if(authHeader === null || refresh_token === undefined){
-            const errorMessage = 'Forbidden';
+            const errorMessage = 'Forbidden auth';
             const httpStatusCode = 403;
             res.status(httpStatusCode).json({ error: errorMessage, statuscode: httpStatusCode });
             return
