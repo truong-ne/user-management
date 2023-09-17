@@ -1,5 +1,4 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
-import { Token } from "./token.entity";
 import { nanoid } from "nanoid";
 import { Role } from "../../config/enum.constants"
 
@@ -29,9 +28,6 @@ export class User {
 
     @Column({ name: 'email_notification', default: false })
     email_notification: boolean
-
-    @OneToMany(() => Token, token => token.user)
-    token: Token
 
     @Column({ type: 'timestamp', name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date
