@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
-import { User } from "./user.entity";
+import { SubUser } from "./subUser.entity";
+import { HealthStats } from "../../config/enum.constants";
 
 @Entity({ name: 'HealthStats' })
 export class HealthStat {
@@ -7,12 +8,12 @@ export class HealthStat {
     }
 
     @PrimaryColumn()
-    // @OneToOne(() => User, user => user.id)
-    // @JoinColumn({ name: 'user_id' })
-    user_id: string
+    @OneToOne(() => SubUser, subUser => subUser.id)
+    @JoinColumn({ name: 'sub_user_id' })
+    sub_user_id: string
 
-    @Column({ name: 'health_stat_type' })
-    health_stat_type: string
+    @Column({ type: 'enum', enum: HealthStats, name: 'health_stat_type' })
+    health_stat_type: HealthStats
 
     @Column({ name: 'value' })
     value: number

@@ -1,4 +1,5 @@
 import { Repository } from "typeorm";
+import * as bcrypt from 'bcrypt'
 
 export abstract class BaseService<T> {
     constructor(protected readonly repoditory: Repository<T>) {
@@ -19,4 +20,13 @@ export abstract class BaseService<T> {
         return time
     }
 
+    async hashing(password: string): Promise<string> {
+        const salt = await bcrypt.genSalt()
+        const hash = await bcrypt.hash(password, salt)
+        return hash
+    }
+
+    async isMatch(password: string, hash: string): Promise<boolean> {
+        return await bcrypt.compare(password, hash)
+    }
 }

@@ -10,11 +10,10 @@ export class SubUser {
     }
 
     @PrimaryColumn()
-    @OneToOne(() => HealthStat, healthStat => healthStat.user_id)
     id: string
 
-   // @ManyToOne(() => User, user => user.sub_users, { onDelete: 'CASCADE' })
-   // @JoinColumn({ name: 'manager_id' })
+    @ManyToOne(() => User, user => user.sub_users, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'manager_id' })
     manager: User
 
     @Column({ name: 'full_name' })

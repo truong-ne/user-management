@@ -35,4 +35,7 @@ export class User {
 
     @Column({ type: 'timestamp', name: 'update_at', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     updated_at: Date;
+
+    @OneToMany(() => SubUser, subUser => subUser.manager, { onDelete: 'CASCADE' })
+    sub_users: SubUser[]
 }

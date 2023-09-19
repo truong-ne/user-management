@@ -1,7 +1,8 @@
-import { Body, Controller, Param, Get, UseGuards } from "@nestjs/common";
+import { Body, Controller, Param, Get, Post, UseGuards } from "@nestjs/common";
 import { UserService } from "../services/user.service";
 import { ApiBearerAuth } from "@nestjs/swagger";
 import { JwtGuard } from "../../auth/guards/jwt.guard";
+import { SignUpDto } from "../dtos/sign-up.dto";
 
 @Controller('user')
 export class UserController {
@@ -9,9 +10,8 @@ export class UserController {
         private readonly userService: UserService
     ) { }
 
-    @UseGuards(JwtGuard)
-    @Get(':id')
-    async signup(@Param('id') id: string): Promise<any> {
-        return await this.userService.getUserById(id)
+    @Post()
+    async signup(@Body() dto: SignUpDto): Promise<any> {
+        return await this.userService.signup(dto)
     }
 }
