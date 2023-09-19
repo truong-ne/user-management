@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { Token } from "./token.entity";
 import { nanoid } from "nanoid";
 import { Role } from "../../config/enum.constants"
+import { SubUser } from "./subUser.entity";
 
 @Entity({ name: 'Users' })
 export class User {
@@ -32,6 +33,9 @@ export class User {
 
     @OneToMany(() => Token, token => token.user)
     token: Token
+
+    @OneToMany(() => SubUser, sub_user => sub_user.manager)
+    sub_users: SubUser[]
 
     @Column({ type: 'timestamp', name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date
