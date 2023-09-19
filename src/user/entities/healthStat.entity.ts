@@ -7,8 +7,8 @@ export class HealthStat {
     }
 
     @PrimaryColumn()
-    @OneToOne(() => User, user => user.id)
-    @JoinColumn({ name: 'user_id' })
+    // @OneToOne(() => User, user => user.id)
+    // @JoinColumn({ name: 'user_id' })
     user_id: string
 
     @Column({ name: 'health_stat_type' })

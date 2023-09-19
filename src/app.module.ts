@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { postgresOption } from './config/database.config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -9,7 +10,8 @@ import { postgresOption } from './config/database.config';
       ...postgresOption,
       autoLoadEntities: true
     }),
-    UserModule
+    UserModule,
+    AuthModule
   ],
 })
 export class AppModule { }

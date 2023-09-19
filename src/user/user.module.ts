@@ -4,15 +4,11 @@ import { User } from "./entities/user.entity";
 import { UserController } from "./controllers/user.controller";
 import { UserService } from "./services/user.service";
 import { JwtModule } from "@nestjs/jwt";
-import { JwtStrategy } from "./jwt.strategy";
-
+import { SubUser } from "./entities/subUser.entity";
+import { HealthStat } from "./entities/healthStat.entity";
 @Module({
     imports: [
-        JwtModule.register({
-            global: true,
-            secret: process.env.JWT_SECRET,
-        }),
-        TypeOrmModule.forFeature([User, Token, SubUser, HealthStat])
+        TypeOrmModule.forFeature([User, SubUser, HealthStat])
     ],
     controllers: [UserController],
     providers: [UserService],
