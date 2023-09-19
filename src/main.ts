@@ -11,15 +11,15 @@ var cookieParser = require('cookie-parser');
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use(cookieParser())
+  app.setGlobalPrefix(process.env.SERVER_NAME)
 
+  app.use(cookieParser())
   //Swagger
   const config = new DocumentBuilder()
-    .setTitle('user-management')
+    .setTitle('USER MANAGEMENT')
     .setDescription('HealthLine API description')
     .setVersion('1.0')
-    .addTag('management')
-    // .addBearerAuth()
+    .addBearerAuth()
     .build()
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup(process.env.SERVER_NAME, app, document, {
@@ -44,8 +44,6 @@ async function bootstrap() {
     credentials: true
   })
 
-  app.setGlobalPrefix(process.env.SERVER_NAME)
-
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap();
