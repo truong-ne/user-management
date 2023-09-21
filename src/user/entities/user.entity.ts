@@ -21,8 +21,14 @@ export class User {
     @Column()
     password: string
 
-    @Column({ name: 'full_name' })
+    @Column()
     full_name: string
+
+    @Column({ nullable: true })
+    address: string
+
+    @Column({ nullable: true })
+    avatar: string
 
     @Column({ type: 'enum', enum: Role, default: Role.USER })
     role: Role

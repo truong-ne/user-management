@@ -22,6 +22,12 @@ export class SubUser {
     @Column({ type: 'timestamp', name: 'date_of_birth' })
     date_of_birth: Date
 
+    @Column({ name: 'gender' })
+    gender: string
+
+    @Column({ name: 'is_main_profile', default: false })
+    isMainProfile: boolean
+
     @Column({ type: 'timestamp', name: 'update_at', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     updated_at: Date;
 }

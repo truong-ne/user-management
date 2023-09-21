@@ -15,10 +15,10 @@ export class HealthStat {
     @Column({ type: 'enum', enum: HealthStats, name: 'health_stat_type' })
     health_stat_type: HealthStats
 
-    @Column({ name: 'value' })
+    @Column()
     value: number
 
-    @Column({ name: 'unit' })
+    @Column()
     unit: string
 
     @Column({ type: 'timestamp', name: 'update_at', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })

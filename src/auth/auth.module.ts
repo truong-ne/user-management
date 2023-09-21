@@ -3,7 +3,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
     providers: [
-        JwtStrategy,
+        JwtStrategy
     ]
 })
 export class AuthModule { }
