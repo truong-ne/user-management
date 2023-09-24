@@ -13,7 +13,7 @@ export class HealthStat {
     sub_user_id: string
 
     @Column({ type: 'enum', enum: HealthStats, name: 'health_stat_type' })
-    health_stat_type: HealthStats
+    health_stat_type: string
 
     @Column()
     value: number

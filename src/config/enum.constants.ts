@@ -1,7 +1,6 @@
-export enum Role {
-    USER = "user",
-    DOCTOR = "doctor",
-    ADMIN = "admin"
+export enum Gender {
+    FEMALE = "female",
+    MALE = "male"
 }
 
 export enum HealthStats {

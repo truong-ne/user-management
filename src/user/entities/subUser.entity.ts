@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from "typeorm";
 import { nanoid } from "nanoid";
 import { User } from "./user.entity";
-import { HealthStat } from "./healthStat.entity";
+import { Gender } from "../../config/enum.constants";
 
 @Entity({ name: 'SubUsers' })
 export class SubUser {
@@ -22,10 +22,10 @@ export class SubUser {
     @Column({ type: 'timestamp', name: 'date_of_birth' })
     date_of_birth: Date
 
-    @Column({ name: 'gender' })
+    @Column({ name: 'gender', type: 'enum', enum: Gender })
     gender: string
 
-    @Column({ name: 'relationship' })
+    @Column({ name: 'relationship', nullable: true })
     relationship: string
 
     @Column({ name: 'is_main_profile', default: false })

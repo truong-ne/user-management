@@ -1,6 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { nanoid } from "nanoid";
-import { Role } from "../../config/enum.constants"
 import { SubUser } from "./subUser.entity";
 
 @Entity({ name: 'Users' })
@@ -29,10 +28,7 @@ export class User {
 
     @Column({ nullable: true })
     avatar: string
-
-    @Column({ type: 'enum', enum: Role, default: Role.USER })
-    role: Role
-
+    
     @Column({ name: 'email_notification', default: false })
     email_notification: boolean
 
