@@ -25,6 +25,9 @@ export class SubUser {
     @Column({ name: 'gender' })
     gender: string
 
+    @Column({ name: 'relationship' })
+    relationship: string
+
     @Column({ name: 'is_main_profile', default: false })
     isMainProfile: boolean
 
