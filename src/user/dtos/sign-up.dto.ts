@@ -16,7 +16,6 @@ export class SignUpDto {
 
     @IsString()
     @Length(8, 30)
-    @Matches('password')
     @ApiProperty({ example: '12345678' })
     passwordConfirm: string;
 

@@ -25,6 +25,9 @@ export class UserService extends BaseService<User>{
     }
 
     async signup(dto: SignUpDto): Promise<any> {
+        if(dto.password !== dto.passwordConfirm)
+            throw new BadRequestException('Mật khẩu không khớp')
+
         const check = await this.findUserByPhone(dto.phone)
 
         if (check)
