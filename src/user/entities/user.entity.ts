@@ -25,9 +25,6 @@ export class User {
 
     @Column({ nullable: true })
     address: string
-
-    @Column({ nullable: true })
-    avatar: string
     
     @Column({ name: 'email_notification', default: false })
     email_notification: boolean

@@ -1,6 +1,13 @@
 export enum Gender {
-    FEMALE = "female",
-    MALE = "male"
+    Female = 'Female',
+    Male = 'Male'
+}
+
+export enum Relationship{
+    Parent = 'Parent',
+    Children = 'Children',
+    Grandparent = 'Grandparent',
+    Sibling = 'Sibling'
 }
 
 export enum HealthStats {
@@ -11,3 +18,4 @@ export enum HealthStats {
     BLOOD_PRESSURE = "blood_pressure",
     WAIST_CIRCUMFERENCE = "waist_cricumference"
 }
+

@@ -1,8 +1,9 @@
-import { Body, Controller, Param, Get, Post, UseGuards, Req } from "@nestjs/common";
+import { Body, Controller, Param, Get, Post, UseGuards, Req, Patch } from "@nestjs/common";
 import { UserService } from "../services/user.service";
 import { ApiBearerAuth } from "@nestjs/swagger";
 import { JwtGuard } from "../../auth/guards/jwt.guard";
 import { SignUpDto } from "../dtos/sign-up.dto";
+import { UpdateProfile } from "../dtos/update-profile.dto";
 
 @Controller('user')
 export class UserController {
@@ -16,9 +17,8 @@ export class UserController {
     }
 
     @UseGuards(JwtGuard)
-    @Get(':id')
-    async test(@Req() req, @Param('id') id: string): Promise<any> {
-        console.log(req.user)
-        return id
+    @Patch()
+    async updateUser(@Req() req, @Body() dto: UpdateProfile): Promise<any> {
+        return await this.userService.updateUser(dto, req.user.id)
     }
 }

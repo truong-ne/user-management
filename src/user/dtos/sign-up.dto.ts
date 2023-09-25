@@ -32,7 +32,7 @@ export class SignUpDto {
 
     @IsNotEmpty()
     @IsString()
-    @ApiProperty({ example: 'Nam' })
+    @ApiProperty({ example: 'Male' })
     gender: string
 
     @IsString()

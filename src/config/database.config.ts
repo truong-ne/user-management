@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 let extraOptions = {}
+
 if (process.env.NODE_ENV !== "development") {
     extraOptions = {
         ssl: {

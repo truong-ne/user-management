@@ -6,6 +6,7 @@ import { Repository } from "typeorm";
 import { SignUpDto } from "../dtos/sign-up.dto";
 import { SubUser } from "../entities/subUser.entity";
 import { UpdateProfile } from "../dtos/update-profile.dto";
+import { Gender } from "../../config/enum.constants";
 
 @Injectable()
 export class UserService extends BaseService<User>{
@@ -25,6 +26,9 @@ export class UserService extends BaseService<User>{
     }
 
     async signup(dto: SignUpDto): Promise<any> {
+        if (!(dto.gender in Gender))
+            throw new BadRequestException('Sai cú pháp!')
+
         if(dto.password !== dto.passwordConfirm)
             throw new BadRequestException('Mật khẩu không khớp')
 
@@ -75,7 +79,10 @@ export class UserService extends BaseService<User>{
         if (!user)
             throw new NotFoundException('Tài khoản không tồn tại')
 
-        user.avatar = dto.avatar
+        if (!(dto.gender in Gender))
+            throw new BadRequestException('Sai cú pháp!')
+        
+
         user.full_name = dto.full_name
         user.address = dto.address
         user.updated_at = this.VNTime()
@@ -87,6 +94,7 @@ export class UserService extends BaseService<User>{
         }
 
         const subUser = await this.subUserRepository.findOneBy({'manager': { 'id': user.id}, 'isMainProfile': true})
+        subUser.avatar = dto.avatar
         subUser.full_name = dto.full_name
         var date = new Date(dto.date_of_birth)
         subUser.date_of_birth = date
