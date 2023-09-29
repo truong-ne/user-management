@@ -58,6 +58,7 @@ export class UserService extends BaseService<User>{
         record.avatar = "default"
         record.isMainProfile = true
         record.manager = user
+        record.address = dto.address
         record.updated_at = this.VNTime()
 
         try {
@@ -105,6 +106,23 @@ export class UserService extends BaseService<User>{
         return {
             "code": 200,
             "message": "Success"
+        }
+    }
+
+    async getProfileByUserId(id: string): Promise<any> {
+        const user = await this.findUserById(id)
+
+        if (!user)
+            throw new NotFoundException('Tài khoản không tồn tại')
+
+        const record = await this.medicalRecordRepository.findBy({'manager': { 'id': user.id}})
+        
+        if (record.length === 0)
+            throw new NotFoundException('Không có hồ sơ nào')
+
+        return {
+            "code": 200,
+            "data": record 
         }
     }
 }
