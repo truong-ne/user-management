@@ -3,8 +3,8 @@ import { nanoid } from "nanoid";
 import { User } from "./user.entity";
 import { Gender, Relationship } from "../../config/enum.constants";
 
-@Entity({ name: 'SubUsers' })
-export class SubUser {
+@Entity({ name: 'MedicalRecords' })
+export class MedicalRecord {
     constructor() {
         this.id = nanoid()
     }
@@ -12,7 +12,7 @@ export class SubUser {
     @PrimaryColumn()
     id: string
 
-    @ManyToOne(() => User, user => user.sub_users, { onDelete: 'CASCADE' })
+    @ManyToOne(() => User, user => user.medicalRecords, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'manager_id' })
     manager: User
 
@@ -30,6 +30,9 @@ export class SubUser {
 
     @Column({ nullable: true })
     avatar: string
+
+    @Column()
+    address: string
 
     @Column({ name: 'is_main_profile', default: false })
     isMainProfile: boolean

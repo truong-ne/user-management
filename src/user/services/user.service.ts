@@ -4,15 +4,15 @@ import { BaseService } from "../../config/base.service";
 import { User } from "../entities/user.entity";
 import { Repository } from "typeorm";
 import { SignUpDto } from "../dtos/sign-up.dto";
-import { SubUser } from "../entities/subUser.entity";
 import { UpdateProfile } from "../dtos/update-profile.dto";
 import { Gender } from "../../config/enum.constants";
+import { MedicalRecord } from "../entities/medicalRecord.entity";
 
 @Injectable()
 export class UserService extends BaseService<User>{
     constructor(
         @InjectRepository(User) private readonly userRepository: Repository<User>,
-        @InjectRepository(SubUser) private readonly subUserRepository: Repository<SubUser>
+        @InjectRepository(MedicalRecord) private readonly medicalRecordRepository: Repository<MedicalRecord>
     ) {
         super(userRepository)
     }
@@ -38,10 +38,9 @@ export class UserService extends BaseService<User>{
             throw new ConflictException('Số điện thoại đã được đăng kí')
 
         const user = new User()
-        user.full_name = dto.full_name
         user.phone = dto.phone
+        user.email = dto.email
         user.password = await this.hashing(dto.password)
-        user.address = dto.address
         user.created_at = this.VNTime()
         user.updated_at = user.created_at
         
@@ -51,17 +50,18 @@ export class UserService extends BaseService<User>{
             throw new BadRequestException('Đăng ký thất bại')
         }
 
-        const subUser = new SubUser()
-        subUser.full_name = dto.full_name
+        const record = new MedicalRecord()
+        record.full_name = dto.full_name
         var date = new Date(dto.date_of_birth)
-        subUser.date_of_birth = date
-        subUser.gender = dto.gender
-        subUser.isMainProfile = true
-        subUser.manager = user
-        subUser.updated_at = this.VNTime()
+        record.date_of_birth = date
+        record.gender = dto.gender
+        record.avatar = "default"
+        record.isMainProfile = true
+        record.manager = user
+        record.updated_at = this.VNTime()
 
         try {
-            await this.subUserRepository.save(subUser)
+            await this.medicalRecordRepository.save(record)
         } catch (error) {
             await this.userRepository.remove(user)
             throw new BadRequestException('Đăng ký thất bại')
@@ -73,7 +73,7 @@ export class UserService extends BaseService<User>{
         }
     }
 
-    async updateUser(dto: UpdateProfile, id: string): Promise<any> {
+    async updateProfile(dto: UpdateProfile, id: string): Promise<any> {
         const user = await this.findUserById(id)
 
         if (!user)
@@ -81,28 +81,23 @@ export class UserService extends BaseService<User>{
 
         if (!(dto.gender in Gender))
             throw new BadRequestException('Sai cú pháp!')
-        
 
-        user.full_name = dto.full_name
-        user.address = dto.address
-        user.updated_at = this.VNTime()
+        const record = await this.medicalRecordRepository.findOneBy({'id': dto.profileId, 'manager': { 'id': user.id}})
         
-        try {
-            await this.userRepository.save(user)
-        } catch (error) {
-            throw new BadRequestException('Chỉnh sửa thất bại')
-        }
+        if (!record)
+            throw new NotFoundException('Hồ sơ không tồn tại')
 
-        const subUser = await this.subUserRepository.findOneBy({'manager': { 'id': user.id}, 'isMainProfile': true})
-        subUser.avatar = dto.avatar
-        subUser.full_name = dto.full_name
+        record.full_name = dto.full_name
         var date = new Date(dto.date_of_birth)
-        subUser.date_of_birth = date
-        subUser.gender = dto.gender
-        subUser.updated_at = this.VNTime()
+        record.date_of_birth = date
+        record.gender = dto.gender
+        record.relationship = dto.relationship
+        record.avatar = dto.avatar
+        record.address = dto.address
+        record.updated_at = this.VNTime()
 
         try {
-            await this.subUserRepository.save(subUser)
+            await this.medicalRecordRepository.save(record)
         } catch (error) {
             throw new BadRequestException('Chỉnh sửa thất bại')
         }

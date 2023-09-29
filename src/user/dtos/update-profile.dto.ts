@@ -1,8 +1,14 @@
-import { IsEmail, IsNotEmpty, IsString, Length } from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
 import { SignUpDto } from "./sign-up.dto";
 import { ApiProperty } from "@nestjs/swagger";
+import { Gender, Relationship } from "../../config/enum.constants";
 
 export class UpdateProfile {
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({ example: 'ID profile' })
+    profileId: string
+
     @IsNotEmpty()
     @IsString()
     @ApiProperty({ example: 'anh dai dien' })
@@ -20,9 +26,14 @@ export class UpdateProfile {
     date_of_birth: string
 
     @IsNotEmpty()
-    @IsString()
+    @IsEnum(Gender)
     @ApiProperty({ example: 'Male' })
-    gender: string
+    gender!: string
+
+    @IsNotEmpty()
+    @IsEnum(Relationship)
+    @ApiProperty({ example: 'Other' })
+    relationship!: string
 
     @IsNotEmpty()
     @IsString()

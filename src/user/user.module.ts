@@ -4,11 +4,10 @@ import { User } from "./entities/user.entity";
 import { UserController } from "./controllers/user.controller";
 import { UserService } from "./services/user.service";
 import { JwtModule } from "@nestjs/jwt";
-import { SubUser } from "./entities/subUser.entity";
-import { HealthStat } from "./entities/healthStat.entity";
+import { MedicalRecord } from "./entities/medicalRecord.entity";
 @Module({
     imports: [
-        TypeOrmModule.forFeature([User, SubUser, HealthStat])
+        TypeOrmModule.forFeature([User, MedicalRecord])
     ],
     controllers: [UserController],
     providers: [UserService],

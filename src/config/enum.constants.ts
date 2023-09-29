@@ -7,7 +7,8 @@ export enum Relationship{
     Parent = 'Parent',
     Children = 'Children',
     Grandparent = 'Grandparent',
-    Sibling = 'Sibling'
+    Sibling = 'Sibling',
+    Other = 'Other'
 }
 
 export enum HealthStats {
