@@ -26,8 +26,8 @@ export class UserService extends BaseService<User>{
     }
 
     async signup(dto: SignUpDto): Promise<any> {
-        if (!(dto.gender in Gender))
-            throw new BadRequestException('Sai cú pháp!')
+        // if (!(dto.gender in Gender))
+        //     throw new BadRequestException('Sai cú pháp!')
 
         if(dto.password !== dto.passwordConfirm)
             throw new BadRequestException('Mật khẩu không khớp')
@@ -54,7 +54,7 @@ export class UserService extends BaseService<User>{
         record.full_name = dto.full_name
         var date = new Date(dto.date_of_birth)
         record.date_of_birth = date
-        record.gender = dto.gender
+        record.gender = "Male"
         record.avatar = "default"
         record.isMainProfile = true
         record.manager = user
