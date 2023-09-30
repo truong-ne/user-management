@@ -28,7 +28,7 @@ export class UserController {
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 400, description: 'Sai thông tin sửa đổi của người dùng' })
     @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
-    @ApiResponse({ status: 500, description: 'Không tìm thấy hồ sơ' })
+    @ApiResponse({ status: 404, description: 'Không tìm thấy hồ sơ' })
     @Patch()
     async updateProfile(@Req() req, @Body() dto: UpdateProfile): Promise<any> {
         return await this.userService.updateProfile(dto, req.user.id)
@@ -39,7 +39,7 @@ export class UserController {
     @ApiOperation({ summary: 'Xem hồ sơ của người dùng', description: 'Xem tất cả các hồ sơ của người dùng' })
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
-    @ApiResponse({ status: 500, description: 'Không tìm thấy hồ sơ' })
+    @ApiResponse({ status: 404, description: 'Không tìm thấy hồ sơ' })
     @Get('/profile')
     async getProfileByUserId(@Req() req): Promise<any> {
         return await this.userService.getProfileByUserId(req.user.id)

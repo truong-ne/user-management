@@ -7,8 +7,8 @@ export class SignUpDto {
     @ApiProperty({ example: '0917068366' })
     phone: string
 
-    @IsNotEmpty()
-    @IsEmail()
+    // @IsNotEmpty()
+    // @IsEmail()
     @ApiProperty({ example: 'customer@gmail.com' })
     email: string
 
