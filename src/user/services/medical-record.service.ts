@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { BaseService } from "../../config/base.service";
-import { MedicalRecord } from "../entities/medicalRecord.entity";
+import { MedicalRecord } from "../entities/medical-record.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { SignUpDto } from "../dtos/sign-up.dto";

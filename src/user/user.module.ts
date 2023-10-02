@@ -3,9 +3,9 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 import { UserController } from "./controllers/user.controller";
 import { UserService } from "./services/user.service";
-import { MedicalRecord } from "./entities/medicalRecord.entity";
-import { MedicalRecordController } from "./controllers/medicalRecord.controller";
-import { MedicalRecordService } from "./services/medicalRecord.service";
+import { MedicalRecord } from "./entities/medical-record.entity";
+import { MedicalRecordController } from "./controllers/medical-record.controller";
+import { MedicalRecordService } from "./services/medical-record.service";
 @Module({
     imports: [
         TypeOrmModule.forFeature([User, MedicalRecord])

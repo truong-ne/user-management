@@ -6,7 +6,7 @@ import { Repository } from "typeorm";
 import { SignUpDto } from "../dtos/sign-up.dto";
 import { UpdateProfile } from "../dtos/update-profile.dto";
 import { Gender } from "../../config/enum.constants";
-import { MedicalRecord } from "../entities/medicalRecord.entity";
+import { MedicalRecord } from "../entities/medical-record.entity";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
 
 @Injectable()

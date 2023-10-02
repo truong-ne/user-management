@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { nanoid } from "nanoid";
-import { MedicalRecord } from "./medicalRecord.entity";
+import { MedicalRecord } from "./medical-record.entity";
 
 @Entity({ name: 'Users' })
 export class User {

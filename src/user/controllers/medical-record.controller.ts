@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Patch, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { MedicalRecordService } from "../services/medicalRecord.service";
+import { MedicalRecordService } from "../services/medical-record.service";
 import { JwtGuard } from "src/auth/guards/jwt.guard";
 import { UpdateProfile } from "../dtos/update-profile.dto";
 import { Gender, Relationship } from "src/config/enum.constants";
 import { AddMedicalRecordDto } from "../dtos/add-medical-record.dto";
 
-@ApiTags('MedicalRecord')
+@ApiTags('Medical Record')
 
 @Controller('medical-record')
 export class MedicalRecordController {
