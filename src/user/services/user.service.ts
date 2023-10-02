@@ -26,8 +26,8 @@ export class UserService extends BaseService<User>{
     }
 
     async signup(dto: SignUpDto): Promise<any> {
-        // if (!(dto.gender in Gender))
-        //     throw new BadRequestException('Sai cú pháp!')
+        if (!(dto.gender in Gender))
+            throw new BadRequestException('Sai cú pháp!')
 
         if(dto.password !== dto.passwordConfirm)
             throw new BadRequestException('Mật khẩu không khớp')
@@ -39,7 +39,6 @@ export class UserService extends BaseService<User>{
 
         const user = new User()
         user.phone = dto.phone
-        user.email = dto.email
         user.password = await this.hashing(dto.password)
         user.created_at = this.VNTime()
         user.updated_at = user.created_at
@@ -54,7 +53,7 @@ export class UserService extends BaseService<User>{
         record.full_name = dto.full_name
         var date = new Date(dto.date_of_birth)
         record.date_of_birth = date
-        record.gender = "Male"
+        record.gender = dto.gender
         record.avatar = "default"
         record.isMainProfile = true
         record.manager = user
@@ -71,58 +70,6 @@ export class UserService extends BaseService<User>{
         return {
             "code": 201,
             "message": "Created"
-        }
-    }
-
-    async updateProfile(dto: UpdateProfile, id: string): Promise<any> {
-        const user = await this.findUserById(id)
-
-        if (!user)
-            throw new NotFoundException('Tài khoản không tồn tại')
-
-        if (!(dto.gender in Gender))
-            throw new BadRequestException('Sai cú pháp!')
-
-        const record = await this.medicalRecordRepository.findOneBy({'id': dto.profileId, 'manager': { 'id': user.id}})
-        
-        if (!record)
-            throw new NotFoundException('Hồ sơ không tồn tại')
-
-        record.full_name = dto.full_name
-        var date = new Date(dto.date_of_birth)
-        record.date_of_birth = date
-        record.gender = dto.gender
-        record.relationship = dto.relationship
-        record.avatar = dto.avatar
-        record.address = dto.address
-        record.updated_at = this.VNTime()
-
-        try {
-            await this.medicalRecordRepository.save(record)
-        } catch (error) {
-            throw new BadRequestException('Chỉnh sửa thất bại')
-        }
-
-        return {
-            "code": 200,
-            "message": "Success"
-        }
-    }
-
-    async getProfileByUserId(id: string): Promise<any> {
-        const user = await this.findUserById(id)
-
-        if (!user)
-            throw new NotFoundException('Tài khoản không tồn tại')
-
-        const record = await this.medicalRecordRepository.findBy({'manager': { 'id': user.id}})
-        
-        if (record.length === 0)
-            throw new NotFoundException('Không có hồ sơ nào')
-
-        return {
-            "code": 200,
-            "data": record 
         }
     }
 }

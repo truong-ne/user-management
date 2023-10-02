@@ -3,14 +3,15 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 import { UserController } from "./controllers/user.controller";
 import { UserService } from "./services/user.service";
-import { JwtModule } from "@nestjs/jwt";
 import { MedicalRecord } from "./entities/medicalRecord.entity";
+import { MedicalRecordController } from "./controllers/medicalRecord.controller";
+import { MedicalRecordService } from "./services/medicalRecord.service";
 @Module({
     imports: [
         TypeOrmModule.forFeature([User, MedicalRecord])
     ],
-    controllers: [UserController],
-    providers: [UserService],
+    controllers: [UserController, MedicalRecordController],
+    providers: [UserService, MedicalRecordService],
 })
 export class UserModule {
 

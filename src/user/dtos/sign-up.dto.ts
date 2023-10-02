@@ -1,16 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsMobilePhone, IsDate, Length, MinLength, MaxLength, Matches, IsEmail } from "class-validator";
+import { IsNotEmpty, IsString, IsMobilePhone, IsDate, Length, MinLength, MaxLength, Matches, IsEmail, IsEnum } from "class-validator";
+import { Gender } from "src/config/enum.constants";
 
 export class SignUpDto {
     @IsNotEmpty()
     @IsMobilePhone()
     @ApiProperty({ example: '0917068366' })
     phone: string
-
-    // @IsNotEmpty()
-    // @IsEmail()
-    @ApiProperty({ example: 'customer@gmail.com' })
-    email: string
 
     @IsNotEmpty()
     @IsString()
@@ -36,7 +32,7 @@ export class SignUpDto {
     date_of_birth: string
 
     @IsNotEmpty()
-    @IsString()
+    @IsEnum(Gender)
     @ApiProperty({ example: 'Male' })
     gender: string
 

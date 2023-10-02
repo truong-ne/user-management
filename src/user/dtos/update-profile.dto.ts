@@ -28,18 +28,11 @@ export class UpdateProfile {
     @IsNotEmpty()
     @IsEnum(Gender)
     @ApiProperty({ example: 'Male' })
-    gender!: string
+    gender: string
 
-    @IsNotEmpty()
-    @IsEnum(Relationship)
-    @ApiProperty({ example: 'Other' })
-    relationship!: string
-
-    @IsNotEmpty()
     @IsString()
-    @IsEmail()
-    @ApiProperty({ example: 'minh@email.com' })
-    email: string
+    @ApiProperty({ example: 'Other' })
+    relationship: string
 
     @IsNotEmpty()
     @IsString()
