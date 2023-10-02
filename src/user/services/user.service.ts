@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from "@nestjs/common";
+import { Injectable, NotFoundException, ConflictException, BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "../../config/base.service";
 import { User } from "../entities/user.entity";
@@ -7,6 +7,7 @@ import { SignUpDto } from "../dtos/sign-up.dto";
 import { UpdateProfile } from "../dtos/update-profile.dto";
 import { Gender } from "../../config/enum.constants";
 import { MedicalRecord } from "../entities/medicalRecord.entity";
+import { ChangeEmailDto } from "../dtos/change-email.dto";
 
 @Injectable()
 export class UserService extends BaseService<User>{
@@ -18,11 +19,19 @@ export class UserService extends BaseService<User>{
     }
 
     async findUserByPhone(phone: string) {
-        return await this.userRepository.findOneBy({ phone: phone })
+        try {
+            return await this.userRepository.findOneBy({ phone: phone })
+        } catch (error) {
+            throw new InternalServerErrorException('Lỗi máy chủ')
+        }
     }
 
     async findUserById(id: string) {
-        return await this.userRepository.findOneBy({ id: id })
+        try {
+            return await this.userRepository.findOneBy({ id: id })
+        } catch (error) {
+            throw new InternalServerErrorException('Lỗi máy chủ')
+        }
     }
 
     async signup(dto: SignUpDto): Promise<any> {
@@ -70,6 +79,43 @@ export class UserService extends BaseService<User>{
         return {
             "code": 201,
             "message": "Created"
+        }
+    }
+
+    async getUserLogin(id: string): Promise<any> {
+        const user = await this.findUserById(id)
+
+        if (!user)
+            throw new NotFoundException('Tài khoản không tồn tại')
+
+        return {
+            "code": 200,
+            "message": "Success",
+            "data": {
+                "phone": user.phone,
+                "email": user.email,
+                "account_balance": user.account_balance
+            } 
+        }
+    }
+
+    async changeUserEmail(dto: ChangeEmailDto, id: string): Promise<any> {
+        const user = await this.findUserById(id)
+
+        if (!user)
+            throw new NotFoundException('Tài khoản không tồn tại')
+
+        user.email = dto.email
+
+        try {
+            await this.userRepository.save(user)
+        } catch (error) {
+            throw new BadRequestException('Chỉnh sửa thất bại')
+        }
+
+        return {
+            "code": 200,
+            "message": "Success"
         }
     }
 }
