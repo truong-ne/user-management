@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { BaseService } from "src/config/base.service";
+import { BaseService } from "../../config/base.service";
 import { MedicalRecord } from "../entities/medicalRecord.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -7,7 +7,8 @@ import { SignUpDto } from "../dtos/sign-up.dto";
 import { User } from "../entities/user.entity";
 import { UpdateProfile } from "../dtos/update-profile.dto";
 import { UserService } from "./user.service";
-import { Gender } from "../../config/enum.constants";
+import { Gender, Relationship } from "../../config/enum.constants";
+import { AddMedicalRecordDto } from "../dtos/add-medical-record.dto";
 
 @Injectable()
 export class MedicalRecordService extends BaseService<MedicalRecord>{
@@ -36,8 +37,11 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
         var date = new Date(dto.date_of_birth)
         record.date_of_birth = date
         record.gender = dto.gender
-        if(record.isMainProfile !== true)
-            record.relationship = dto.relationship 
+        if(record.isMainProfile !== true) {
+            if (!(dto.relationship in Relationship))
+                throw new BadRequestException('Sai cú pháp!')
+            record.relationship = dto.relationship
+        } 
         record.avatar = dto.avatar
         record.address = dto.address
         record.updated_at = this.VNTime()
@@ -69,6 +73,35 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
             "code": 200,
             "message": "Success",
             "data": record 
+        }
+    }
+
+    async createNewMedicalRecord(dto: AddMedicalRecordDto, id: string): Promise<any> {
+        const user = await this.userService.findUserById(id)
+
+        if (!user)
+            throw new NotFoundException('Tài khoản không tồn tại')
+
+        const record = new MedicalRecord()
+        record.full_name = dto.full_name
+        var date = new Date(dto.date_of_birth)
+        record.date_of_birth = date
+        record.gender = dto.gender
+        record.relationship = dto.relationship 
+        record.avatar = dto.avatar
+        record.address = dto.address
+        record.updated_at = this.VNTime()
+        record.manager = user
+
+        try {
+            await this.medicalRecordRepository.save(record)
+        } catch (error) {
+            throw new BadRequestException('Thêm hồ sơ thất bại')
+        }
+
+        return {
+            "code": 201,
+            "message": "Created"
         }
     }
 }

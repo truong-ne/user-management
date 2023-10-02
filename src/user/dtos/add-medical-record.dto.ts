@@ -1,25 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString, IsMobilePhone, IsDate, Length, MinLength, MaxLength, Matches, IsEmail, IsEnum } from "class-validator";
-import { Gender } from "../../config/enum.constants";
+import { Gender, Relationship } from "../../config/enum.constants";
 
-export class SignUpDto {
-    @IsNotEmpty()
-    @IsMobilePhone()
-    @ApiProperty({ example: '0917068366' })
-    phone: string
-
-    @IsNotEmpty()
-    @IsString()
-    @Length(8, 30)
-    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {message: 'password too weak'})
-    @ApiProperty({ example: '12345678' })
-    password: string
-
-    @IsString()
-    @Length(8, 30)
-    @ApiProperty({ example: '12345678' })
-    passwordConfirm: string;
-
+export class AddMedicalRecordDto {
     @IsNotEmpty()
     @IsString()
     @Length(2, 30)
@@ -35,6 +18,16 @@ export class SignUpDto {
     @IsEnum(Gender, { message: "Sai cú pháp" })
     @ApiProperty({ example: 'Male' })
     gender: string
+
+    @IsNotEmpty()
+    @IsEnum(Relationship, { message: "Sai cú pháp" })
+    @ApiProperty({ example: 'Other' })
+    relationship: string
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({ example: 'anh dai dien' })
+    avatar: string
 
     @IsString()
     @MaxLength(50)

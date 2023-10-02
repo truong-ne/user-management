@@ -26,7 +26,7 @@ export class UpdateProfile {
     date_of_birth: string
 
     @IsNotEmpty()
-    @IsEnum(Gender)
+    @IsEnum(Gender, { message: "Sai cú pháp" })
     @ApiProperty({ example: 'Male' })
     gender: string
 
