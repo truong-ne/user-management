@@ -31,7 +31,7 @@ export class MedicalRecord {
     @Column({ nullable: true })
     avatar: string
 
-    @Column()
+    @Column({ nullable: true })
     address: string
 
     @Column({ name: 'is_main_profile', default: false })
