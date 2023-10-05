@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { MedicalRecordService } from "../services/medical-record.service";
 import { JwtGuard } from "src/auth/guards/jwt.guard";
@@ -49,5 +49,16 @@ export class MedicalRecordController {
     @Post()
     async createNewMedicalRecord(@Req() req, @Body() dto: AddMedicalRecordDto): Promise<any> {
         return await this.medicalRecordService.createNewMedicalRecord(dto, req.user.id)
+    }
+
+    @UseGuards(JwtGuard)
+    @ApiOperation({ summary: 'Xóa hồ sơ của người dùng', description: 'Xóa hồ sơ của người dùng' })
+    @ApiResponse({ status: 200, description: 'Thành công' })
+    @ApiResponse({ status: 400, description: 'Không cho phép xóa hồ sơ' })
+    @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
+    @ApiResponse({ status: 404, description: 'Không tìm thấy hồ sơ' })
+    @Delete(':profileId')
+    async removeMedicalRecord(@Param('profileId')profileId: string, @Req() req): Promise<any> {
+        return await this.medicalRecordService.removeMedicalRecord(profileId, req.user.id)
     }
 }

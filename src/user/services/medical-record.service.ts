@@ -106,4 +106,24 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
             "message": "Created"
         }
     }
+
+    async removeMedicalRecord(id: string, userId: string): Promise<any> {
+        const record = await this.medicalRecordRepository.findOne({ where: { 'id': id, 'manager': { 'id': userId } } })
+
+        if (!record)
+            throw new NotFoundException('Hồ sơ không tồn tại')
+        else if (record.isMainProfile === true)
+            throw new BadRequestException('Không cho phép xóa hồ sơ này')
+
+        try {
+            await this.medicalRecordRepository.remove(record)
+        } catch (error) {
+            throw new BadRequestException('Xóa hồ sơ thất bại')
+        }
+
+        return {
+            "code": 200,
+            "message": "Success" 
+        }
+    }
 }
