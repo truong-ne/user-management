@@ -14,13 +14,15 @@ import { AddMedicalRecordDto } from "../dtos/add-medical-record.dto";
 export class MedicalRecordService extends BaseService<MedicalRecord>{
     constructor(
         private readonly userService: UserService,
-        @InjectRepository(MedicalRecord) private readonly medicalRecordRepository: Repository<MedicalRecord>
+        @InjectRepository(MedicalRecord) private readonly medicalRecordRepository: Repository<MedicalRecord>,
+        @InjectRepository(User) private readonly userRepository: Repository<User>
+
     ) {
         super(medicalRecordRepository)
     }
 
     async updateMedicalRecord(dto: UpdateProfile, id: string): Promise<any> {
-        const user = await this.userService.findUserById(id)
+        const user = await this.userRepository.findOne({ where: { 'id': id }, relations: ['medicalRecords'] })
 
         if (!user)
             throw new NotFoundException('Tài khoản không tồn tại')
@@ -28,7 +30,7 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
         if (!(dto.gender in Gender))
             throw new BadRequestException('Sai cú pháp!')
 
-        const record = await this.medicalRecordRepository.findOneBy({'id': dto.profileId, 'manager': { 'id': user.id}})
+        const record = user.medicalRecords.filter((record) => record.id === dto.profileId)[0]
         
         if (!record)
             throw new NotFoundException('Hồ sơ không tồn tại')
@@ -59,12 +61,12 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
     }
 
     async getAllMedicalRecordByUserId(id: string): Promise<any> {
-        const user = await this.userService.findUserById(id)
+        const user = await this.userRepository.findOne({ where: { 'id': id }, relations: ['medicalRecords'] })
 
         if (!user)
             throw new NotFoundException('Tài khoản không tồn tại')
 
-        const record = await this.medicalRecordRepository.findBy({'manager': { 'id': user.id}})
+        const record = user.medicalRecords
         
         if (record.length === 0)
             throw new NotFoundException('Không có hồ sơ nào')
