@@ -34,7 +34,6 @@ export class UpdateProfile {
     @ApiProperty({ example: 'Other' })
     relationship: string
 
-    @IsNotEmpty()
     @IsString()
     @Length(2, 50)
     @ApiProperty({ example: 'HCM' })
