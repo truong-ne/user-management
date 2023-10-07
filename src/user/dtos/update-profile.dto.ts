@@ -35,7 +35,7 @@ export class UpdateProfile {
     relationship: string
 
     @IsString()
-    @Length(2, 50)
+    @Length(0, 50)
     @ApiProperty({ example: 'HCM' })
     address: string
 }
