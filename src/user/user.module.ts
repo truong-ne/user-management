@@ -8,7 +8,7 @@ import { MedicalRecordController } from "./controllers/medical-record.controller
 import { MedicalRecordService } from "./services/medical-record.service";
 @Module({
     imports: [
-        TypeOrmModule.forFeature([User, MedicalRecord])
+        TypeOrmModule.forFeature([User, MedicalRecord]),
     ],
     controllers: [UserController, MedicalRecordController],
     providers: [UserService, MedicalRecordService],

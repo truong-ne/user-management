@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Get, Post, UseGuards, Req, Patch } from "@nestjs/common";
+import { Body, Controller, Param, Get, Post, UseGuards, Req, Patch, UseInterceptors, Inject } from "@nestjs/common";
 import { UserService } from "../services/user.service";
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JwtGuard } from "../../auth/guards/jwt.guard";
@@ -6,13 +6,16 @@ import { SignUpDto } from "../dtos/sign-up.dto";
 import { UpdateProfile } from "../dtos/update-profile.dto";
 import { Gender, Relationship } from "../../config/enum.constants";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
+import { CACHE_MANAGER, CacheInterceptor, CacheTTL } from "@nestjs/cache-manager";
+import { Cache } from "cache-manager";
 
 @ApiTags('User')
 
 @Controller('user')
 export class UserController {
     constructor(
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) { }
 
     @ApiOperation({ summary: 'Đăng ký dành cho người dùng', description: 'Đăng ký thành công sẽ tạo người dùng mới' })
@@ -27,16 +30,24 @@ export class UserController {
     }
 
     @UseGuards(JwtGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Xem tài khoản người dùng', description: 'Thông tin tài khoản đăng nhập' })
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 404, description: 'Không tìm thấy tài khoản' })
     @ApiResponse({ status: 500, description: 'Lỗi máy chủ' })
     @Get()
     async getUserLogin(@Req() req): Promise<any> {
-        return await this.userService.getUserLogin(req.user.id)
+        const cacheSchedules = await this.cacheManager.get('user-' + req.user.id);
+        if (cacheSchedules) return cacheSchedules
+
+        const data = await await this.userService.getUserLogin(req.user.id)
+        await this.cacheManager.set('user-' + req.user.id, data)
+
+        return data
     }
 
     @UseGuards(JwtGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Chỉnh sửa thông tin tài khoản', description: 'Thông tin tài khoản được thay đổi' })
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 404, description: 'Không tìm thấy Tài khoản' })

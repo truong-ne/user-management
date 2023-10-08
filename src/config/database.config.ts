@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv'
+import { redisStore } from 'cache-manager-redis-yet';
 
 dotenv.config()
 
@@ -22,4 +23,15 @@ export const postgresOption: any = {
     ssl: (process.env.NODE_ENV === "development") ? null : true,
     extra: extraOptions,
     synchronize: process.env.NODE_ENV !== "production"
+}
+
+export const redisClientOption: any = {
+    store: redisStore,
+    username: process.env.REDIS_USERNAME,
+    password: process.env.REDIS_PASSWORD,
+    socket: {
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT
+    },
+    ttl: 30 * 60 * 1000  //default
 }
