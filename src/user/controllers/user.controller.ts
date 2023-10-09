@@ -10,7 +10,6 @@ import { CACHE_MANAGER, CacheInterceptor, CacheTTL } from "@nestjs/cache-manager
 import { Cache } from "cache-manager";
 
 @ApiTags('User')
-
 @Controller('user')
 export class UserController {
     constructor(
