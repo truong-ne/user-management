@@ -85,13 +85,20 @@ export class UserService extends BaseService<User>{
         if (!user)
             throw new NotFoundException('Tài khoản không tồn tại')
 
+        const main_record = await this.medicalRecordRepository.findOneBy({ 'manager': { 'id': id }, 'isMainProfile': true })
+
         return {
             "code": 200,
             "message": "Success",
             "data": {
                 "phone": user.phone,
                 "email": user.email,
-                "account_balance": user.account_balance
+                "account_balance": user.account_balance,
+                "full_name": main_record.full_name,
+                "date_of_birth": main_record.date_of_birth,
+                "gender": main_record.gender,
+                "avatar": main_record.avatar,
+                "address": main_record.address
             } 
         }
     }
