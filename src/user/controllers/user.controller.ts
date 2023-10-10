@@ -53,6 +53,7 @@ export class UserController {
     @ApiResponse({ status: 500, description: 'Lỗi máy chủ' })
     @Patch()
     async changeUserEmail(@Body() dto: ChangeEmailDto, @Req() req): Promise<any> {
-        return await this.userService.changeUserEmail(dto, req.user.id)
+        const data = await this.userService.changeUserEmail(dto, req.user.id)
+        return await this.cacheManager.del('user-' + req.user.id)
     }
 }

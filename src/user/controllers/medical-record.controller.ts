@@ -61,7 +61,9 @@ export class MedicalRecordController {
     @ApiResponse({ status: 404, description: 'Không tìm thấy người dùng' })
     @Post()
     async createNewMedicalRecord(@Req() req, @Body() dto: AddMedicalRecordDto): Promise<any> {
-        return await this.medicalRecordService.createNewMedicalRecord(dto, req.user.id)
+        const data = await this.medicalRecordService.createNewMedicalRecord(dto, req.user.id)
+        await this.cacheManager.del('medical-record-' + req.user.id)
+        return data
     }
 
     @UseGuards(JwtGuard)
@@ -73,6 +75,8 @@ export class MedicalRecordController {
     @ApiResponse({ status: 404, description: 'Không tìm thấy hồ sơ' })
     @Delete(':profileId')
     async removeMedicalRecord(@Param('profileId')profileId: string, @Req() req): Promise<any> {
-        return await this.medicalRecordService.removeMedicalRecord(profileId, req.user.id)
+        const data = await this.medicalRecordService.removeMedicalRecord(profileId, req.user.id)
+        await this.cacheManager.del('medical-record-' + req.user.id)
+        return data
     }
 }
