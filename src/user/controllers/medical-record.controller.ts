@@ -28,7 +28,9 @@ export class MedicalRecordController {
     @ApiResponse({ status: 404, description: 'Không tìm thấy hồ sơ' })
     @Patch()
     async updateMedicalRecord(@Req() req, @Body() dto: UpdateProfile): Promise<any> {
-        return await this.medicalRecordService.updateMedicalRecord(dto, req.user.id)
+        const data = await this.medicalRecordService.updateMedicalRecord(dto, req.user.id)
+        await this.cacheManager.del('medicalRecord-' + req.user.id)
+        return data
     }
 
 
@@ -40,12 +42,12 @@ export class MedicalRecordController {
     @ApiResponse({ status: 404, description: 'Không tìm thấy hồ sơ' })
     @Get()
     async getAllMedicalRecordByUserId(@Req() req): Promise<any> {
-        const cacheSchedules = await this.cacheManager.get('medical-record-' + req.user.id);
+        const cacheSchedules = await this.cacheManager.get('medicalRecord-' + req.user.id);
         if (cacheSchedules) return cacheSchedules
 
         const data = await this.medicalRecordService.getAllMedicalRecordByUserId(req.user.id)
 
-        await this.cacheManager.set('medical-record-' + req.user.id, data)
+        await this.cacheManager.set('medicalRecord-' + req.user.id, data)
 
         return data
     }
@@ -58,11 +60,11 @@ export class MedicalRecordController {
     @ApiResponse({ status: 201, description: 'Thành công' })
     @ApiResponse({ status: 400, description: 'Sai thông tin đầu vào' })
     @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
-    @ApiResponse({ status: 404, description: 'Không tìm thấy người dùng' })
+    @ApiResponse({ status: 404, description: 'Không tìm thấy hồ sơ' })
     @Post()
     async createNewMedicalRecord(@Req() req, @Body() dto: AddMedicalRecordDto): Promise<any> {
         const data = await this.medicalRecordService.createNewMedicalRecord(dto, req.user.id)
-        await this.cacheManager.del('medical-record-' + req.user.id)
+        await this.cacheManager.del('medicalRecord-' + req.user.id)
         return data
     }
 
@@ -73,10 +75,11 @@ export class MedicalRecordController {
     @ApiResponse({ status: 400, description: 'Không cho phép xóa hồ sơ' })
     @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
     @ApiResponse({ status: 404, description: 'Không tìm thấy hồ sơ' })
+    @ApiResponse({ status: 405, description: 'Không được xóa hồ sơ này' })
     @Delete(':profileId')
     async removeMedicalRecord(@Param('profileId')profileId: string, @Req() req): Promise<any> {
         const data = await this.medicalRecordService.removeMedicalRecord(profileId, req.user.id)
-        await this.cacheManager.del('medical-record-' + req.user.id)
+        await this.cacheManager.del('medicalRecord-' + req.user.id)
         return data
     }
 }

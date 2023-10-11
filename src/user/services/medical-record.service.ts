@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, MethodNotAllowedException, NotFoundException } from "@nestjs/common";
 import { BaseService } from "../../config/base.service";
 import { MedicalRecord } from "../entities/medical-record.entity";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -25,15 +25,12 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
         const user = await this.userRepository.findOne({ where: { 'id': id }, relations: ['medicalRecords'] })
 
         if (!user)
-            throw new NotFoundException('Tài khoản không tồn tại')
-
-        if (!(dto.gender in Gender))
-            throw new BadRequestException('Sai cú pháp!')
+            throw new NotFoundException('user_not_found')
 
         const record = user.medicalRecords.filter((record) => record.id === dto.profileId)[0]
         
         if (!record)
-            throw new NotFoundException('Hồ sơ không tồn tại')
+            throw new NotFoundException('medical_record_not_found')
 
         record.full_name = dto.full_name
         var date = new Date(dto.date_of_birth)
@@ -41,7 +38,7 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
         record.gender = dto.gender
         if(record.isMainProfile !== true) {
             if (!(dto.relationship in Relationship))
-                throw new BadRequestException('Sai cú pháp!')
+                throw new BadRequestException('wrong_syntax')
             record.relationship = dto.relationship
         } 
         record.avatar = dto.avatar
@@ -51,12 +48,12 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
         try {
             await this.medicalRecordRepository.save(record)
         } catch (error) {
-            throw new BadRequestException('Chỉnh sửa thất bại')
+            throw new BadRequestException('update_medical_record_failed')
         }
 
         return {
             "code": 200,
-            "message": "Success"
+            "message": "success"
         }
     }
 
@@ -64,25 +61,22 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
         const user = await this.userRepository.findOne({ where: { 'id': id }, relations: ['medicalRecords'] })
 
         if (!user)
-            throw new NotFoundException('Tài khoản không tồn tại')
+            throw new NotFoundException('user_not_found')
 
         const record = user.medicalRecords
         
         if (record.length === 0)
-            throw new NotFoundException('Không có hồ sơ nào')
+            throw new NotFoundException('medical_record_not_found')
 
         return {
             "code": 200,
-            "message": "Success",
+            "message": "success",
             "data": record 
         }
     }
 
     async createNewMedicalRecord(dto: AddMedicalRecordDto, id: string): Promise<any> {
         const user = await this.userService.findUserById(id)
-
-        if (!user)
-            throw new NotFoundException('Tài khoản không tồn tại')
 
         const record = new MedicalRecord()
         record.full_name = dto.full_name
@@ -98,12 +92,12 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
         try {
             await this.medicalRecordRepository.save(record)
         } catch (error) {
-            throw new BadRequestException('Thêm hồ sơ thất bại')
+            throw new BadRequestException('create_medical_record_failed')
         }
 
         return {
             "code": 201,
-            "message": "Created"
+            "message": "created"
         }
     }
 
@@ -111,19 +105,19 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
         const record = await this.medicalRecordRepository.findOne({ where: { 'id': id, 'manager': { 'id': userId } } })
 
         if (!record)
-            throw new NotFoundException('Hồ sơ không tồn tại')
+            throw new NotFoundException('medical_record_not_found')
         else if (record.isMainProfile === true)
-            throw new BadRequestException('Không cho phép xóa hồ sơ này')
+            throw new MethodNotAllowedException('Deletion_of_this_medical_record_is_not_allowed')
 
         try {
             await this.medicalRecordRepository.remove(record)
         } catch (error) {
-            throw new BadRequestException('Xóa hồ sơ thất bại')
+            throw new BadRequestException('delete_medical_record_failed')
         }
 
         return {
             "code": 200,
-            "message": "Success" 
+            "message": "success" 
         }
     }
 }

@@ -19,29 +19,28 @@ export class UserService extends BaseService<User>{
     }
 
     async findUserByPhone(phone: string) {
-        try {
-            return await this.userRepository.findOneBy({ phone: phone })
-        } catch (error) {
-            throw new InternalServerErrorException('Lỗi máy chủ')
-        }
+        const user = await this.userRepository.findOneBy({ phone: phone })
+
+        return user
     }
 
     async findUserById(id: string) {
-        try {
-            return await this.userRepository.findOneBy({ id: id })
-        } catch (error) {
-            throw new InternalServerErrorException('Lỗi máy chủ')
-        }
+        const user = await this.userRepository.findOneBy({ id: id })
+
+        if(!user)
+            throw new NotFoundException('user_not_found')
+
+        return user
     }
 
     async signup(dto: SignUpDto): Promise<any> {
         if(dto.password !== dto.passwordConfirm)
-            throw new BadRequestException('Mật khẩu không khớp')
+            throw new BadRequestException('password_incorrect')
 
         const check = await this.findUserByPhone(dto.phone)
 
         if (check)
-            throw new ConflictException('Số điện thoại đã được đăng kí')
+            throw new ConflictException('phone_number_has_been_registered')
 
         const user = new User()
         user.phone = dto.phone
@@ -52,7 +51,7 @@ export class UserService extends BaseService<User>{
         try {
             await this.userRepository.save(user)
         } catch (error) {
-            throw new BadRequestException('Đăng ký thất bại')
+            throw new BadRequestException('sign_up_failed')
         }
 
         const record = new MedicalRecord()
@@ -70,26 +69,23 @@ export class UserService extends BaseService<User>{
             await this.medicalRecordRepository.save(record)
         } catch (error) {
             await this.userRepository.remove(user)
-            throw new BadRequestException('Đăng ký thất bại')
+            throw new BadRequestException('sign_up_failed')
         }
 
         return {
             "code": 201,
-            "message": "Created"
+            "message": "created"
         }
     }
 
     async getUserLogin(id: string): Promise<any> {
         const user = await this.findUserById(id)
 
-        if (!user)
-            throw new NotFoundException('Tài khoản không tồn tại')
-
         const main_record = await this.medicalRecordRepository.findOneBy({ 'manager': { 'id': id }, 'isMainProfile': true })
 
         return {
             "code": 200,
-            "message": "Success",
+            "message": "success",
             "data": {
                 "phone": user.phone,
                 "email": user.email,
@@ -106,20 +102,17 @@ export class UserService extends BaseService<User>{
     async changeUserEmail(dto: ChangeEmailDto, id: string): Promise<any> {
         const user = await this.findUserById(id)
 
-        if (!user)
-            throw new NotFoundException('Tài khoản không tồn tại')
-
         user.email = dto.email
 
         try {
             await this.userRepository.save(user)
         } catch (error) {
-            throw new BadRequestException('Chỉnh sửa thất bại')
+            throw new BadRequestException('update_user_failed')
         }
 
         return {
             "code": 200,
-            "message": "Success"
+            "message": "success"
         }
     }
 }
