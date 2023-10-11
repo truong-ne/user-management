@@ -39,7 +39,7 @@ export class UserController {
         const cacheSchedules = await this.cacheManager.get('user-' + req.user.id);
         if (cacheSchedules) return cacheSchedules
 
-        const data = await await this.userService.getUserLogin(req.user.id)
+        const data = await this.userService.getUserLogin(req.user.id)
         await this.cacheManager.set('user-' + req.user.id, data)
 
         return data
