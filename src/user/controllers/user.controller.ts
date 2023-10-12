@@ -8,6 +8,7 @@ import { Gender, Relationship } from "../../config/enum.constants";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
+import { ChangePasswordDto } from "../dtos/change-password.dto";
 
 @ApiTags('User')
 @Controller('user')
@@ -54,6 +55,20 @@ export class UserController {
     @Patch()
     async changeUserEmail(@Body() dto: ChangeEmailDto, @Req() req): Promise<any> {
         const data = await this.userService.changeUserEmail(dto, req.user.id)
+        await this.cacheManager.del('user-' + req.user.id)
+        return data
+    }
+
+    @UseGuards(JwtGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Thay đổi mật khẩu của người dùng', description: 'Thay đổi mật khẩu của người dùng khi người dùng đã đăng nhập' })
+    @ApiResponse({ status: 200, description: 'Thành công' })
+    @ApiResponse({ status: 400, description: 'Đổi mật khẩu người dùng thất bại' })
+    @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
+    @ApiResponse({ status: 404, description: 'Không tìm thấy Tài khoản' })
+    @Patch()
+    async changeUserPassword(@Body() dto: ChangePasswordDto, @Req() req): Promise<any> {
+        const data = await this.userService.changeUserPassword(dto, req.user.id)
         await this.cacheManager.del('user-' + req.user.id)
         return data
     }

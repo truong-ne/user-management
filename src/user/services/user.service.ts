@@ -8,6 +8,7 @@ import { UpdateProfile } from "../dtos/update-profile.dto";
 import { Gender } from "../../config/enum.constants";
 import { MedicalRecord } from "../entities/medical-record.entity";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
+import { ChangePasswordDto } from "../dtos/change-password.dto";
 
 @Injectable()
 export class UserService extends BaseService<User>{
@@ -103,6 +104,26 @@ export class UserService extends BaseService<User>{
         const user = await this.findUserById(id)
 
         user.email = dto.email
+
+        try {
+            await this.userRepository.save(user)
+        } catch (error) {
+            throw new BadRequestException('update_user_failed')
+        }
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    }
+
+    async changeUserPassword(dto: ChangePasswordDto, id: string): Promise<any> {
+        const user = await this.findUserById(id)
+
+        if(dto.password !== dto.passwordConfirm)
+            throw new BadRequestException('password_incorrect')
+        else
+            user.password = await this.hashing(dto.password)
 
         try {
             await this.userRepository.save(user)
