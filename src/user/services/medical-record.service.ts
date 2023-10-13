@@ -28,7 +28,7 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
             throw new NotFoundException('user_not_found')
 
         const record = user.medicalRecords.filter((record) => record.id === dto.profileId)[0]
-        
+
         if (!record)
             throw new NotFoundException('medical_record_not_found')
 
@@ -36,11 +36,11 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
         var date = new Date(dto.date_of_birth)
         record.date_of_birth = date
         record.gender = dto.gender
-        if(record.isMainProfile !== true) {
+        if (record.isMainProfile !== true) {
             if (!(dto.relationship in Relationship))
                 throw new BadRequestException('wrong_syntax')
             record.relationship = dto.relationship
-        } 
+        }
         record.avatar = dto.avatar
         record.address = dto.address
         record.updated_at = this.VNTime()
@@ -64,14 +64,14 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
             throw new NotFoundException('user_not_found')
 
         const record = user.medicalRecords
-        
+
         if (record.length === 0)
             throw new NotFoundException('medical_record_not_found')
 
         return {
             "code": 200,
             "message": "success",
-            "data": record 
+            "data": record
         }
     }
 
@@ -80,16 +80,17 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
 
         const record = new MedicalRecord()
         record.full_name = dto.full_name
-        var date = new Date(dto.date_of_birth)
-        record.date_of_birth = date
+        // var date = new Date(dto.date_of_birth)
+        record.date_of_birth = this.VNTime()
         record.gender = dto.gender
-        record.relationship = dto.relationship 
+        record.relationship = dto.relationship
         record.avatar = dto.avatar
         record.address = dto.address
         record.updated_at = this.VNTime()
         record.manager = user
 
         try {
+            console.log(record)
             await this.medicalRecordRepository.save(record)
         } catch (error) {
             throw new BadRequestException('create_medical_record_failed')
@@ -117,7 +118,7 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
 
         return {
             "code": 200,
-            "message": "success" 
+            "message": "success"
         }
     }
 }
