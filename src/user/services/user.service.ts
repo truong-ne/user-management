@@ -57,8 +57,11 @@ export class UserService extends BaseService<User>{
 
         const record = new MedicalRecord()
         record.full_name = dto.full_name
-        var date = new Date(dto.date_of_birth)
-        record.date_of_birth = date
+        var date = new Date(dto.date_of_birth.replace(/(\d+[/])(\d+[/])/, '$2$1'))
+        if(isNaN(date.valueOf()))
+            throw new BadRequestException('wrong_syntax')
+        else
+            record.date_of_birth = date
         record.gender = dto.gender
         record.avatar = "default"
         record.isMainProfile = true

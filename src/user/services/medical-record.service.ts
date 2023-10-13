@@ -9,6 +9,7 @@ import { UpdateProfile } from "../dtos/update-profile.dto";
 import { UserService } from "./user.service";
 import { Gender, Relationship } from "../../config/enum.constants";
 import { AddMedicalRecordDto } from "../dtos/add-medical-record.dto";
+import { IsDate } from "class-validator";
 
 @Injectable()
 export class MedicalRecordService extends BaseService<MedicalRecord>{
@@ -33,8 +34,11 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
             throw new NotFoundException('medical_record_not_found')
 
         record.full_name = dto.full_name
-        var date = new Date(dto.date_of_birth)
-        record.date_of_birth = date
+        var date = new Date(dto.date_of_birth.replace(/(\d+[/])(\d+[/])/, '$2$1'))
+        if(isNaN(date.valueOf()))
+            throw new BadRequestException('wrong_syntax')
+        else
+            record.date_of_birth = date
         record.gender = dto.gender
         if (record.isMainProfile !== true) {
             if (!(dto.relationship in Relationship))
@@ -80,8 +84,11 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
 
         const record = new MedicalRecord()
         record.full_name = dto.full_name
-        // var date = new Date(dto.date_of_birth)
-        record.date_of_birth = this.VNTime()
+        var date = new Date(dto.date_of_birth.replace(/(\d+[/])(\d+[/])/, '$2$1'))
+        if(isNaN(date.valueOf()))
+            throw new BadRequestException('wrong_syntax')
+        else
+            record.date_of_birth = date
         record.gender = dto.gender
         record.relationship = dto.relationship
         record.avatar = dto.avatar
