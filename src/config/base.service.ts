@@ -2,7 +2,7 @@ import { Repository } from "typeorm";
 import * as bcrypt from 'bcrypt'
 
 export abstract class BaseService<T> {
-    constructor(protected readonly repoditory: Repository<T>) {
+    constructor(protected readonly repository: Repository<T>) {
 
     }
 
