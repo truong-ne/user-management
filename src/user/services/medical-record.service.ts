@@ -91,13 +91,12 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
             record.date_of_birth = date
         record.gender = dto.gender
         record.relationship = dto.relationship
-        record.avatar = 'healthline/users/' + id + '/avatars/' + record.id
+        record.avatar = dto.avatar
         record.address = dto.address
         record.updated_at = this.VNTime()
         record.manager = user
 
         try {
-            console.log(record)
             await this.medicalRecordRepository.save(record)
         } catch (error) {
             throw new BadRequestException('create_medical_record_failed')
@@ -105,10 +104,7 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
 
         return {
             "code": 201,
-            "message": "created",
-            "data": {
-                record_id: record.id
-            }
+            "message": "created"
         }
     }
 
