@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, MethodNotAllowedException, NotFoundExc
 import { BaseService } from "../../config/base.service";
 import { MedicalRecord } from "../entities/medical-record.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import { SignUpDto } from "../dtos/sign-up.dto";
 import { User } from "../entities/user.entity";
 import { UpdateProfile } from "../dtos/update-profile.dto";
@@ -20,6 +20,27 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
 
     ) {
         super(medicalRecordRepository)
+    }
+
+    async findAllMainRecord(uids: string[]) {
+        const records = await this.medicalRecordRepository.find({ where: { isMainProfile: true, manager: { id: In(uids) } }, relations: ['manager']  })
+
+        if(records.length === 0)
+            throw new NotFoundException('medical_record_not_found')
+
+        const data = []
+        records.forEach(e => {
+            data.push({
+                uid: e.manager.id,
+                full_name: e.full_name,
+                avatar: e.avatar
+            })
+        })
+        return {
+            "code": 200,
+            "message": "success",
+            "data": data
+        }
     }
 
     async updateMedicalRecord(dto: UpdateProfile, id: string): Promise<any> {
