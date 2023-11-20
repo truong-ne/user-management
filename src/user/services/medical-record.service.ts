@@ -151,11 +151,27 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
 
     async getAllMedicalRecordPerPage(page: number, num: number): Promise<any> {
         var skip = (page - 1) * num
-        const records = await this.medicalRecordRepository.find({ skip: skip, take: num, order: { updated_at: "DESC" }, relations: [] })
+        const records = await this.medicalRecordRepository.find({ skip: skip, take: num, order: { updated_at: "DESC" } })
+        const data = []
+        
+        records.forEach(r => {
+            var relation = ""
+            if(r.relationship !== null)
+                relation = r.relationship
+            data.push({
+                id: r.id,
+                full_name: r.full_name,
+                date_of_birth: r.date_of_birth,
+                gender: r.gender,
+                relationship: relation,
+                avatar: r.avatar,
+                address: r.address,
+            })
+        })
         return {
             "code": 200,
             "message": "success",
-            "data": records
+            "data": data
         }
     }
 }
