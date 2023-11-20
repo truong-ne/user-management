@@ -82,4 +82,20 @@ export class MedicalRecordController {
         await this.cacheManager.del('medicalRecord-' + req.user.id)
         return data
     }
+
+    // @UseGuards(JwtGuard)
+    // @ApiBearerAuth()
+    @ApiOperation({ summary: 'Xem tất cả hồ sơ của bênh nhân', description: 'Người quản lý xem tất cả hồ sơ của bênh nhân' })
+    @ApiResponse({ status: 200, description: 'Thành công' })
+    @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
+    @Get('/all/:page/:num')
+    async getAllMedicalRecordPerPage(@Param('page') page: number, @Param('num') num: number): Promise<any> {
+        const cacheSchedules = await this.cacheManager.get('allMedicalRecord-' + page + '-' + num);
+        if (cacheSchedules) return cacheSchedules
+        const data = await this.medicalRecordService.getAllMedicalRecordPerPage(page, num)
+
+        await this.cacheManager.set('allMedicalRecord-' + page + '-' + num, data)
+
+        return data
+    }
 }
