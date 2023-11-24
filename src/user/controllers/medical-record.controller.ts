@@ -7,6 +7,7 @@ import { Gender, Relationship } from "src/config/enum.constants";
 import { AddMedicalRecordDto } from "../dtos/add-medical-record.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
+import { AdminGuard } from "src/auth/guards/admin.guard";
 
 @ApiTags('Medical Record')
 
@@ -83,8 +84,8 @@ export class MedicalRecordController {
         return data
     }
 
-    // @UseGuards(JwtGuard)
-    // @ApiBearerAuth()
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Xem tất cả hồ sơ của bênh nhân', description: 'Người quản lý xem tất cả hồ sơ của bênh nhân' })
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
