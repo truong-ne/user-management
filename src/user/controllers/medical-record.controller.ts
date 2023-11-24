@@ -84,8 +84,8 @@ export class MedicalRecordController {
         return data
     }
 
-    @UseGuards(AdminGuard)
-    @ApiBearerAuth()
+    // @UseGuards(AdminGuard)
+    // @ApiBearerAuth()
     @ApiOperation({ summary: 'Xem tất cả hồ sơ của bênh nhân', description: 'Người quản lý xem tất cả hồ sơ của bênh nhân' })
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
@@ -100,8 +100,8 @@ export class MedicalRecordController {
         return data
     }
 
-    @UseGuards(AdminGuard)
-    @ApiBearerAuth()
+    // @UseGuards(AdminGuard)
+    // @ApiBearerAuth()
     @ApiOperation({ summary: 'Xem số lượng của bênh nhân', description: 'Người quản lý xem số lượng bênh nhân' })
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
