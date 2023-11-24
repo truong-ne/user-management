@@ -166,6 +166,7 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
                 relationship: relation,
                 avatar: r.avatar,
                 address: r.address,
+                updated_at: r.updated_at
             })
         })
         return {
