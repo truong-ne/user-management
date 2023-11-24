@@ -7,7 +7,7 @@ import { Gender, Relationship } from "src/config/enum.constants";
 import { AddMedicalRecordDto } from "../dtos/add-medical-record.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
-import { AdminGuard } from "src/auth/guards/admin.guard";
+import { AdminGuard } from "../../auth/guards/admin.guard";
 
 @ApiTags('Medical Record')
 
