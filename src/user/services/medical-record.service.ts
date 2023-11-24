@@ -174,4 +174,9 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
             "data": data
         }
     }
+
+    async getQuantityPatient(): Promise<number> {
+        const users = await this.medicalRecordRepository.find()
+        return users.length
+    }
 }

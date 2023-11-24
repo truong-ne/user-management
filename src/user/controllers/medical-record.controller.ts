@@ -99,4 +99,20 @@ export class MedicalRecordController {
 
         return data
     }
+
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Xem số lượng của bênh nhân', description: 'Người quản lý xem số lượng bênh nhân' })
+    @ApiResponse({ status: 200, description: 'Thành công' })
+    @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
+    @Get('/quantity')
+    async getQuantityPatient(): Promise<any> {
+        const cacheSchedules = await this.cacheManager.get('medicalRecordQuantity');
+        if (cacheSchedules) return cacheSchedules
+        const data = await this.medicalRecordService.getQuantityPatient()
+
+        await this.cacheManager.set('medicalRecordQuantity', data)
+
+        return data
+    }
 }
