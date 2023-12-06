@@ -4,11 +4,10 @@ import { BaseService } from "../../config/base.service";
 import { User } from "../entities/user.entity";
 import { Repository } from "typeorm";
 import { SignUpDto } from "../dtos/sign-up.dto";
-import { UpdateProfile } from "../dtos/update-profile.dto";
-import { Gender } from "../../config/enum.constants";
 import { MedicalRecord } from "../entities/medical-record.entity";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
 import { ChangePasswordDto } from "../dtos/change-password.dto";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class UserService extends BaseService<User>{
@@ -17,6 +16,7 @@ export class UserService extends BaseService<User>{
         @InjectRepository(MedicalRecord) private readonly medicalRecordRepository: Repository<MedicalRecord>
     ) {
         super(userRepository)
+        this.getAllUsers()
     }
 
     async findUserByPhone(phone: string) {
@@ -138,5 +138,35 @@ export class UserService extends BaseService<User>{
             "code": 200,
             "message": "success"
         }
+    }
+
+    @Cron(CronExpression.EVERY_10_MINUTES)
+    async getAllUsers() {
+        const users = await this.medicalRecordRepository.find({ where: { isMainProfile: true }, relations: ['manager'] })
+
+        const data = []
+        users.forEach(u => {
+            data.push({
+                id: u.manager.id,
+                full_name: u.full_name,
+                date_of_birth: u.date_of_birth,
+                gender: u.gender,
+                avatar: u.avatar,
+                address: u.address,
+                account_balance: u.manager.account_balance,
+                email: u.manager.email,
+                phone: u.manager.phone,
+                update_at: u.updated_at
+            })
+        })
+
+        const response = await fetch('https://meilisearch-truongne.koyeb.app/indexes/user/documents', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer CHOPPER_LOVE_MEILISEARCH",
+            },
+            body: JSON.stringify(data),
+        });
     }
 }
