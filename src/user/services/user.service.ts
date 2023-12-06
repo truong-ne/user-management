@@ -77,6 +77,26 @@ export class UserService extends BaseService<User>{
             throw new BadRequestException('sign_up_failed')
         }
 
+        const users = await this.medicalRecordRepository.find({ where: { isMainProfile: true, manager: { id: user.id } }, relations: ['manager'] })
+
+        const data = []
+        users.forEach(u => {
+            data.push({
+                id: u.manager.id,
+                full_name: u.full_name,
+                date_of_birth: u.date_of_birth,
+                gender: u.gender,
+                avatar: u.avatar,
+                address: u.address,
+                account_balance: u.manager.account_balance,
+                email: u.manager.email,
+                phone: u.manager.phone,
+                update_at: u.updated_at
+            })
+        })
+         
+        this.updateMeilisearch(data)
+
         return {
             "code": 201,
             "message": "created"
@@ -141,6 +161,17 @@ export class UserService extends BaseService<User>{
         }
     }
 
+    async updateMeilisearch(data: any) {
+        const response = await fetch('https://meilisearch-truongne.koyeb.app/indexes/user/documents', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer CHOPPER_LOVE_MEILISEARCH",
+            },
+            body: JSON.stringify(data),
+        });
+    }
+
     @Cron(CronExpression.EVERY_10_MINUTES)
     async getAllUsers() {
         const users = await this.medicalRecordRepository.find({ where: { isMainProfile: true }, relations: ['manager'] })
@@ -161,13 +192,6 @@ export class UserService extends BaseService<User>{
             })
         })
 
-        const response = await fetch('https://meilisearch-truongne.koyeb.app/indexes/user/documents', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer CHOPPER_LOVE_MEILISEARCH",
-            },
-            body: JSON.stringify(data),
-        });
+        await this.updateMeilisearch(data)
     }
 }
