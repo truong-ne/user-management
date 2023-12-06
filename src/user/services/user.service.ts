@@ -45,6 +45,7 @@ export class UserService extends BaseService<User>{
 
         const user = new User()
         user.phone = dto.phone
+        user.email = dto.email
         user.password = await this.hashing(dto.password)
         user.created_at = this.VNTime()
         user.updated_at = user.created_at

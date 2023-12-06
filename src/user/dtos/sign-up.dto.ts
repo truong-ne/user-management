@@ -9,6 +9,11 @@ export class SignUpDto {
     phone: string
 
     @IsNotEmpty()
+    @IsEmail()
+    @ApiProperty({ example: 'customer@gmail.com' })
+    email: string
+
+    @IsNotEmpty()
     @IsString()
     @Length(8, 30)
     @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {message: 'password too weak'})
