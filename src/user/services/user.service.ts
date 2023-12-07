@@ -188,6 +188,7 @@ export class UserService extends BaseService<User>{
                 account_balance: u.manager.account_balance,
                 email: u.manager.email,
                 phone: u.manager.phone,
+                created_at: u.manager.created_at,
                 update_at: u.updated_at
             })
         })
