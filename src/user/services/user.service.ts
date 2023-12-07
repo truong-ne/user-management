@@ -47,12 +47,7 @@ export class UserService extends BaseService<User>{
         user.phone = dto.phone
         user.email = dto.email
         user.password = await this.hashing(dto.password)
-        var date_cre = new Date(dto.created_at.replace(/(\d+[/])(\d+[/])/, '$2$1'))
-        if(isNaN(date_cre.valueOf()))
-            throw new BadRequestException('wrong_syntax')
-        else
-            user.created_at = date_cre
-        
+        user.created_at = this.VNTime()
         user.updated_at = user.created_at
         
         try {
