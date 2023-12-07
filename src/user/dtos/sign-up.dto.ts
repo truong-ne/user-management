@@ -45,4 +45,9 @@ export class SignUpDto {
     @MaxLength(50)
     @ApiProperty({ example: 'HCM' })
     address: string
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({ example: '09/20/2023' })
+    created_at: string
 }
