@@ -47,7 +47,11 @@ export class UserService extends BaseService<User>{
         user.phone = dto.phone
         user.email = dto.email
         user.password = await this.hashing(dto.password)
-        user.created_at = this.VNTime()
+        var datecre = new Date(dto.created_at.replace(/(\d+[/])(\d+[/])/, '$2$1'))
+        if(isNaN(datecre.valueOf()))
+            throw new BadRequestException('wrong_syntax')
+        else
+            user.created_at = datecre
         user.updated_at = user.created_at
         
         try {
@@ -68,7 +72,7 @@ export class UserService extends BaseService<User>{
         record.isMainProfile = true
         record.manager = user
         record.address = dto.address
-        record.updated_at = this.VNTime()
+        record.updated_at = datecre
 
         try {
             await this.medicalRecordRepository.save(record)
