@@ -74,4 +74,13 @@ export class UserController {
         await this.cacheManager.del('user-' + req.user.id)
         return data
     }
+
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @Patch('reset-password/:userId')
+    async resetPasswordByAdmin(
+        @Param('userId') userId: string
+    ) {
+        return await this.userService.adminChangeUserPassword(userId)
+    }
 }

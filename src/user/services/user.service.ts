@@ -8,6 +8,14 @@ import { MedicalRecord } from "../entities/medical-record.entity";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
 import { ChangePasswordDto } from "../dtos/change-password.dto";
 import { Cron, CronExpression } from "@nestjs/schedule";
+import * as nodemailer from 'nodemailer'
+import { nanoid } from "nanoid";
+import { promisify } from 'util'
+import * as fs from 'fs'
+
+const readFile = promisify(fs.readFile);
+
+const nodemailer = require("nodemailer")
 
 @Injectable()
 export class UserService extends BaseService<User>{
@@ -159,6 +167,52 @@ export class UserService extends BaseService<User>{
             "code": 200,
             "message": "success"
         }
+    }
+
+    async adminChangeUserPassword(id: string): Promise<any> {
+        const user = await this.findUserById(id)
+
+        const password = nanoid(10)
+
+        user.password = await this.hashing(password)
+
+        try {
+            await this.userRepository.save(user)
+        } catch (error) {
+            throw new BadRequestException('update_user_failed')
+        }
+
+        await this.mailer(user.email, password)
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    }
+
+    async mailer(email: string, password: string) {
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: "healthlinemanager2023@gmail.com",
+                pass: "eizm tolt wjyi qdjn",
+            },
+        });
+
+        const htmlContent = await readFile('./src/template/newpassword.html', 'utf8');
+        const modifiedHtmlContent = htmlContent.replace('{{ password }}', password);
+
+        const info = await transporter.sendMail({
+            from: '"Healthline Inc" <healthlinemanager2023@gmail.com>',
+            to: `${email}`,
+            subject: "[PASSWORD] DOCTOR", // Subject line
+            text: `Your new Password is ${password}`, // plain text body
+            html: modifiedHtmlContent
+        });
+
+        console.log("Password sent: %s", info.messageId);
     }
 
     async updateMeilisearch(data: any) {
