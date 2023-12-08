@@ -100,4 +100,21 @@ export class MedicalRecordController {
 
         return data
     }
+
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Xem số liệu thống kê bênh nhân', description: 'Người quản lý xem số liệu thống kê bênh nhân' })
+    @ApiResponse({ status: 200, description: 'Thành công' })
+    @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
+    @Get('/statistical/quantity')
+    async statisticalMedicalRecord(): Promise<any> {
+        // const cacheSchedules = await this.cacheManager.get('quantity' + this.medicalRecordService.VNTime().getFullYear() + this.medicalRecordService.VNTime().getMonth());
+        // if (cacheSchedules) return cacheSchedules
+
+        const data = await this.medicalRecordService.statisticalMedicalRecord()
+
+        // await this.cacheManager.set('quantity' + this.medicalRecordService.VNTime().getFullYear() + this.medicalRecordService.VNTime().getMonth(), data)
+
+        return data
+    }
 }

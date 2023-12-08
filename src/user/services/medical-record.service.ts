@@ -184,4 +184,23 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
             "data": users.length
         }
     }
+
+    async statisticalMedicalRecord(): Promise<any> {
+        const medicals = await this.medicalRecordRepository.find()
+
+        const date = this.VNTime()
+        const startDate = new Date(date.getFullYear(), date.getMonth(), 1); // Ngày bắt đầu tháng
+        const endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0); // Ngày cuối cùng của tháng
+
+        const medicalIncrease = medicals.filter(m => m.updated_at >= startDate && m.updated_at <= endDate);
+
+        return {
+            "code": 200,
+            "message": "success",
+            "data": {
+                quantity: medicals.length,
+                increase: medicalIncrease.length
+            }
+        }
+    }
 }
