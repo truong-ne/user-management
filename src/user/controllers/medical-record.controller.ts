@@ -84,35 +84,31 @@ export class MedicalRecordController {
         return data
     }
 
-    // @UseGuards(AdminGuard)
-    // @ApiBearerAuth()
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Xem tất cả hồ sơ của bênh nhân', description: 'Người quản lý xem tất cả hồ sơ của bênh nhân' })
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
-    @Get('/all/:page/:num')
-    async getAllMedicalRecordPerPage(@Param('page') page: number, @Param('num') num: number): Promise<any> {
-        const cacheSchedules = await this.cacheManager.get('allMedicalRecord-' + page + '-' + num);
+    @Get(':id')
+    async getAllMedicalRecordAdmin(@Param('id') userId: string): Promise<any> {
+        const cacheSchedules = await this.cacheManager.get('medicalRecord-' + userId);
         if (cacheSchedules) return cacheSchedules
-        const data = await this.medicalRecordService.getAllMedicalRecordPerPage(page, num)
 
-        await this.cacheManager.set('allMedicalRecord-' + page + '-' + num, data)
+        const data = await this.medicalRecordService.getAllMedicalRecordByUserId(userId)
+
+        await this.cacheManager.set('medicalRecord-' + userId, data)
 
         return data
     }
 
-    // @UseGuards(AdminGuard)
-    // @ApiBearerAuth()
-    @ApiOperation({ summary: 'Xem số lượng của bênh nhân', description: 'Người quản lý xem số lượng bênh nhân' })
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Xem số liệu thống kê bênh nhân', description: 'Người quản lý xem số liệu thống kê bênh nhân' })
     @ApiResponse({ status: 200, description: 'Thành công' })
     @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
-    @Get('/quantity')
-    async getQuantityPatient(): Promise<any> {
-        const cacheSchedules = await this.cacheManager.get('medicalRecordQuantity');
-        if (cacheSchedules) return cacheSchedules
-        const data = await this.medicalRecordService.getQuantityPatient()
-
-        await this.cacheManager.set('medicalRecordQuantity', data)
-
+    @Get('/statistical/quantity')
+    async statisticalMedicalRecord(): Promise<any> {
+        const data = await this.medicalRecordService.statisticalMedicalRecord()
         return data
     }
 }

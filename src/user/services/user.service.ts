@@ -4,11 +4,18 @@ import { BaseService } from "../../config/base.service";
 import { User } from "../entities/user.entity";
 import { Repository } from "typeorm";
 import { SignUpDto } from "../dtos/sign-up.dto";
-import { UpdateProfile } from "../dtos/update-profile.dto";
-import { Gender } from "../../config/enum.constants";
 import { MedicalRecord } from "../entities/medical-record.entity";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
 import { ChangePasswordDto } from "../dtos/change-password.dto";
+import { Cron, CronExpression } from "@nestjs/schedule";
+import * as nodemailer from 'nodemailer'
+import { nanoid } from "nanoid";
+import { promisify } from 'util'
+import * as fs from 'fs'
+
+const readFile = promisify(fs.readFile);
+
+const nodemailer = require("nodemailer")
 
 @Injectable()
 export class UserService extends BaseService<User>{
@@ -17,6 +24,7 @@ export class UserService extends BaseService<User>{
         @InjectRepository(MedicalRecord) private readonly medicalRecordRepository: Repository<MedicalRecord>
     ) {
         super(userRepository)
+        this.getAllUsers()
     }
 
     async findUserByPhone(phone: string) {
@@ -45,6 +53,7 @@ export class UserService extends BaseService<User>{
 
         const user = new User()
         user.phone = dto.phone
+        user.email = dto.email
         user.password = await this.hashing(dto.password)
         user.created_at = this.VNTime()
         user.updated_at = user.created_at
@@ -75,6 +84,26 @@ export class UserService extends BaseService<User>{
             await this.userRepository.remove(user)
             throw new BadRequestException('sign_up_failed')
         }
+
+        const users = await this.medicalRecordRepository.find({ where: { isMainProfile: true, manager: { id: user.id } }, relations: ['manager'] })
+
+        const data = []
+        users.forEach(u => {
+            data.push({
+                id: u.manager.id,
+                full_name: u.full_name,
+                date_of_birth: u.date_of_birth,
+                gender: u.gender,
+                avatar: u.avatar,
+                address: u.address,
+                account_balance: u.manager.account_balance,
+                email: u.manager.email,
+                phone: u.manager.phone,
+                update_at: u.updated_at
+            })
+        })
+         
+        this.updateMeilisearch(data)
 
         return {
             "code": 201,
@@ -138,5 +167,86 @@ export class UserService extends BaseService<User>{
             "code": 200,
             "message": "success"
         }
+    }
+
+    async adminChangeUserPassword(id: string): Promise<any> {
+        const user = await this.findUserById(id)
+
+        const password = nanoid(10)
+
+        user.password = await this.hashing(password)
+
+        try {
+            await this.userRepository.save(user)
+        } catch (error) {
+            throw new BadRequestException('update_user_failed')
+        }
+
+        await this.mailer(user.email, password)
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    }
+
+    async mailer(email: string, password: string) {
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: "healthlinemanager2023@gmail.com",
+                pass: "eizm tolt wjyi qdjn",
+            },
+        });
+
+        const htmlContent = await readFile('./src/template/newpassword.html', 'utf8');
+        const modifiedHtmlContent = htmlContent.replace('{{ password }}', password);
+
+        const info = await transporter.sendMail({
+            from: '"Healthline Inc" <healthlinemanager2023@gmail.com>',
+            to: `${email}`,
+            subject: "[PASSWORD] DOCTOR", // Subject line
+            text: `Your new Password is ${password}`, // plain text body
+            html: modifiedHtmlContent
+        });
+
+        console.log("Password sent: %s", info.messageId);
+    }
+
+    async updateMeilisearch(data: any) {
+        const response = await fetch('https://meilisearch-truongne.koyeb.app/indexes/user/documents', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer CHOPPER_LOVE_MEILISEARCH",
+            },
+            body: JSON.stringify(data),
+        });
+    }
+
+    @Cron(CronExpression.EVERY_10_MINUTES)
+    async getAllUsers() {
+        const users = await this.medicalRecordRepository.find({ where: { isMainProfile: true }, relations: ['manager'] })
+
+        const data = []
+        users.forEach(u => {
+            data.push({
+                id: u.manager.id,
+                full_name: u.full_name,
+                date_of_birth: u.date_of_birth,
+                gender: u.gender,
+                avatar: u.avatar,
+                address: u.address,
+                account_balance: u.manager.account_balance,
+                email: u.manager.email,
+                phone: u.manager.phone,
+                created_at: u.manager.created_at,
+                update_at: u.updated_at
+            })
+        })
+
+        await this.updateMeilisearch(data)
     }
 }

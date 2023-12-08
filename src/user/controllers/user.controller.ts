@@ -9,6 +9,8 @@ import { ChangeEmailDto } from "../dtos/change-email.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
 import { ChangePasswordDto } from "../dtos/change-password.dto";
+import { AdminGuard } from "src/auth/guards/admin.guard";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @ApiTags('User')
 @Controller('user')
@@ -71,5 +73,14 @@ export class UserController {
         const data = await this.userService.changeUserPassword(dto, req.user.id)
         await this.cacheManager.del('user-' + req.user.id)
         return data
+    }
+
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @Patch('reset-password/:userId')
+    async resetPasswordByAdmin(
+        @Param('userId') userId: string
+    ) {
+        return await this.userService.adminChangeUserPassword(userId)
     }
 }
