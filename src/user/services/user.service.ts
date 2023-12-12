@@ -36,20 +36,29 @@ export class UserService extends BaseService<User>{
     async findUserById(id: string) {
         const user = await this.userRepository.findOneBy({ id: id })
 
-        if(!user)
+        if (!user)
             throw new NotFoundException('user_not_found')
 
         return user
     }
 
     async signup(dto: SignUpDto): Promise<any> {
-        if(dto.password !== dto.passwordConfirm)
+        if (dto.password !== dto.passwordConfirm)
             throw new BadRequestException('password_incorrect')
 
-        const check = await this.findUserByPhone(dto.phone)
+        const checkPhone = await this.findUserByPhone(dto.phone)
 
-        if (check)
+        if (checkPhone)
             throw new ConflictException('phone_number_has_been_registered')
+
+        const checkEmail = await this.userRepository.findOne({
+            where: { email: dto.email }
+        })
+
+        if (checkEmail)
+            throw new ConflictException('email_number_has_been_registered')
+
+
 
         const user = new User()
         user.phone = dto.phone
@@ -57,7 +66,7 @@ export class UserService extends BaseService<User>{
         user.password = await this.hashing(dto.password)
         user.created_at = this.VNTime()
         user.updated_at = user.created_at
-        
+
         try {
             await this.userRepository.save(user)
         } catch (error) {
@@ -67,7 +76,7 @@ export class UserService extends BaseService<User>{
         const record = new MedicalRecord()
         record.full_name = dto.full_name
         var date = new Date(dto.date_of_birth.replace(/(\d+[/])(\d+[/])/, '$2$1'))
-        if(isNaN(date.valueOf()))
+        if (isNaN(date.valueOf()))
             throw new BadRequestException('wrong_syntax')
         else
             record.date_of_birth = date
@@ -102,7 +111,7 @@ export class UserService extends BaseService<User>{
                 update_at: u.updated_at
             })
         })
-         
+
         this.updateMeilisearch(data)
 
         return {
@@ -128,7 +137,7 @@ export class UserService extends BaseService<User>{
                 "gender": main_record.gender,
                 "avatar": main_record.avatar,
                 "address": main_record.address
-            } 
+            }
         }
     }
 
@@ -152,7 +161,7 @@ export class UserService extends BaseService<User>{
     async changeUserPassword(dto: ChangePasswordDto, id: string): Promise<any> {
         const user = await this.findUserById(id)
 
-        if(dto.password !== dto.passwordConfirm)
+        if (dto.password !== dto.passwordConfirm)
             throw new BadRequestException('password_incorrect')
         else
             user.password = await this.hashing(dto.password)
