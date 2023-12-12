@@ -51,12 +51,12 @@ export class UserService extends BaseService<User>{
         if (checkPhone)
             throw new ConflictException('phone_number_has_been_registered')
 
-        const checkEmail = await this.userRepository.findOne({
-            where: { email: dto.email }
-        })
+        // const checkEmail = await this.userRepository.findOne({
+        //     where: { email: dto.email }
+        // })
 
-        if (checkEmail)
-            throw new ConflictException('email_number_has_been_registered')
+        // if (checkEmail)
+        //     throw new ConflictException('email_number_has_been_registered')
 
 
 
