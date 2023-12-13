@@ -5,13 +5,11 @@ import { postgresOption, redisClientOption } from './config/database.config';
 import { AuthModule } from './auth/auth.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisClientOptions } from 'redis';
+import { dataSourceOptions } from '../db/data-source';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      ...postgresOption,
-      autoLoadEntities: true
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     CacheModule.register<RedisClientOptions>({
       isGlobal: true,
       ...redisClientOption

@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { MedicalRecordService } from "../services/medical-record.service";
-import { JwtGuard } from "src/auth/guards/jwt.guard";
+import { JwtGuard } from "../../auth/guards/jwt.guard";
 import { UpdateProfile } from "../dtos/update-profile.dto";
-import { Gender, Relationship } from "src/config/enum.constants";
+import { Gender, Relationship } from "../../config/enum.constants";
 import { AddMedicalRecordDto } from "../dtos/add-medical-record.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
