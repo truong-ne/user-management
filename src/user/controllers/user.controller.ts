@@ -54,7 +54,7 @@ export class UserController {
     @ApiResponse({ status: 400, description: 'Đổi thông tin người dùng thất bại' })
     @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
     @ApiResponse({ status: 404, description: 'Không tìm thấy Tài khoản' })
-    @Patch()
+    @Patch('/email')
     async changeUserEmail(@Body() dto: ChangeEmailDto, @Req() req): Promise<any> {
         const data = await this.userService.changeUserEmail(dto, req.user.id)
         await this.cacheManager.del('user-' + req.user.id)
@@ -68,7 +68,7 @@ export class UserController {
     @ApiResponse({ status: 400, description: 'Đổi mật khẩu người dùng thất bại' })
     @ApiResponse({ status: 401, description: 'Chưa xác thực người dùng' })
     @ApiResponse({ status: 404, description: 'Không tìm thấy Tài khoản' })
-    @Patch()
+    @Patch('/password')
     async changeUserPassword(@Body() dto: ChangePasswordDto, @Req() req): Promise<any> {
         const data = await this.userService.changeUserPassword(dto, req.user.id)
         await this.cacheManager.del('user-' + req.user.id)
@@ -82,5 +82,12 @@ export class UserController {
         @Param('userId') userId: string
     ) {
         return await this.userService.adminChangeUserPassword(userId)
+    }
+
+    @Post('forget-password/:gmail')
+    async forgetPassword(
+        @Param('gmail') gmail: string
+    ) {
+        return await this.userService.forgetPassword(gmail)
     }
 }

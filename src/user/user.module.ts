@@ -8,11 +8,23 @@ import { MedicalRecordController } from "./controllers/medical-record.controller
 import { MedicalRecordService } from "./services/medical-record.service";
 import * as dotenv from 'dotenv'
 import { ScheduleModule } from "@nestjs/schedule";
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 
 dotenv.config()
 
 @Module({
     imports: [
+        RabbitMQModule.forRoot(RabbitMQModule, {
+            exchanges: [
+                {
+                    name: 'healthline.user.information',
+                    type: 'direct'
+                }
+            ],
+            uri: process.env.RABBITMQ_URL,
+            connectionInitOptions: { wait: false, reject: true, timeout: 10000 },
+            enableControllerDiscovery: true
+        }),
         ScheduleModule.forRoot(),
         TypeOrmModule.forFeature([User, MedicalRecord]),
     ],

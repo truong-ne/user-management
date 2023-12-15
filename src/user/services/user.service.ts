@@ -12,6 +12,7 @@ import * as nodemailer from 'nodemailer'
 import { nanoid } from "nanoid";
 import { promisify } from 'util'
 import * as fs from 'fs'
+import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 
 const readFile = promisify(fs.readFile);
 
@@ -21,10 +22,10 @@ const nodemailer = require("nodemailer")
 export class UserService extends BaseService<User>{
     constructor(
         @InjectRepository(User) private readonly userRepository: Repository<User>,
-        @InjectRepository(MedicalRecord) private readonly medicalRecordRepository: Repository<MedicalRecord>
+        @InjectRepository(MedicalRecord) private readonly medicalRecordRepository: Repository<MedicalRecord>,
+        private readonly amqpConnection: AmqpConnection
     ) {
         super(userRepository)
-        this.getAllUsers()
     }
 
     async findUserByPhone(phone: string) {
@@ -56,9 +57,7 @@ export class UserService extends BaseService<User>{
         })
 
         if (checkEmail)
-            throw new ConflictException('email_number_has_been_registered')
-
-
+            throw new ConflictException('email_has_been_registered')
 
         const user = new User()
         user.phone = dto.phone
@@ -192,6 +191,32 @@ export class UserService extends BaseService<User>{
         }
 
         await this.mailer(user.email, password)
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    }
+
+    async forgetPassword(email: string): Promise<any> {
+        const checkEmail = await this.userRepository.findOne({
+            where: { email: email }
+        })
+
+        if (!checkEmail)
+            throw new NotFoundException('email_not_found')
+
+        const rabbitmq = await this.amqpConnection.request<any>({
+            exchange: 'healthline.user.information',
+            routingKey: 'create_otp',
+            payload: checkEmail.id,
+            timeout: 10000,
+        })
+
+        if(!rabbitmq || rabbitmq === '')
+            throw new BadRequestException('send_email_failed')
+
+        await this.mailer(checkEmail.email, rabbitmq)
 
         return {
             "code": 200,
