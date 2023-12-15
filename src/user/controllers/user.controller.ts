@@ -8,7 +8,7 @@ import { Gender, Relationship } from "../../config/enum.constants";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
-import { ChangePasswordDto } from "../dtos/change-password.dto";
+import { ChangePasswordDto, ChangePasswordForgotDto } from "../dtos/change-password.dto";
 import { AdminGuard } from "src/auth/guards/admin.guard";
 import { Cron, CronExpression } from "@nestjs/schedule";
 
@@ -89,5 +89,12 @@ export class UserController {
         @Param('gmail') gmail: string
     ) {
         return await this.userService.forgetPassword(gmail)
+    }
+
+    @Post('reset-password-forgot')
+    async changePasswordForgot(
+        @Body() dto: ChangePasswordForgotDto
+    ) {     
+        return await this.userService.changePasswordForgot(dto)
     }
 }

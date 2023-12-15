@@ -6,7 +6,7 @@ import { Repository } from "typeorm";
 import { SignUpDto } from "../dtos/sign-up.dto";
 import { MedicalRecord } from "../entities/medical-record.entity";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
-import { ChangePasswordDto } from "../dtos/change-password.dto";
+import { ChangePasswordDto, ChangePasswordForgotDto } from "../dtos/change-password.dto";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import * as nodemailer from 'nodemailer'
 import { nanoid } from "nanoid";
@@ -223,6 +223,44 @@ export class UserService extends BaseService<User>{
             "message": "success"
         }
     }
+
+    async changePasswordForgot(dto: ChangePasswordForgotDto): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { email: dto.email }
+        })
+        if (!user)
+            throw new NotFoundException('email_not_found')
+
+        if (dto.password !== dto.passwordConfirm)
+            throw new BadRequestException('password_incorrect')
+        else if (user.password === dto.password)
+            throw new BadRequestException('password_had_use')
+        else {
+            const rabbitmq = await this.amqpConnection.request<any>({
+                exchange: 'healthline.user.information',
+                routingKey: 'check_otp',
+                payload: { userId: user.id, code: dto.otp },
+                timeout: 10000,
+            })
+
+            if(rabbitmq) {
+                user.password = await this.hashing(dto.password)
+            } else 
+                throw new BadRequestException('otp_expired')
+        }
+
+        try {
+            await this.userRepository.save(user)
+        } catch (error) {
+            throw new BadRequestException('update_user_failed')
+        }
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    }
+
 
     async mailer(email: string, password: string) {
         const transporter = nodemailer.createTransport({
