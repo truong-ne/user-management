@@ -6,7 +6,6 @@ import { UserService } from "./services/user.service";
 import { MedicalRecord } from "./entities/medical-record.entity";
 import { MedicalRecordController } from "./controllers/medical-record.controller";
 import { MedicalRecordService } from "./services/medical-record.service";
-import { UserConsumer } from "./consumers/user.consumer";
 import * as dotenv from 'dotenv'
 import { ScheduleModule } from "@nestjs/schedule";
 
