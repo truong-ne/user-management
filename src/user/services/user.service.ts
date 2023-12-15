@@ -177,6 +177,18 @@ export class UserService extends BaseService<User>{
         }
     }
 
+    async depositMoney(money: number, userId: string) {
+        const user = await this.findUserById(userId)
+
+        user.account_balance += money
+        await this.userRepository.save(user)
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    }
+
     async adminChangeUserPassword(id: string): Promise<any> {
         const user = await this.findUserById(id)
 

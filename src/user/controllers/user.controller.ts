@@ -97,4 +97,14 @@ export class UserController {
     ) {     
         return await this.userService.changePasswordForgot(dto)
     }
+
+    @UseGuards(JwtGuard)
+    @ApiBearerAuth()
+    @Post('deposit-money/:money')
+    async depositMoney(
+        @Param('money') money: number,
+        @Req() req
+    ) {     
+        return await this.userService.depositMoney(money, req.user.id)
+    }
 }
