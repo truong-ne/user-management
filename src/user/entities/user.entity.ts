@@ -19,7 +19,7 @@ export class User {
 
     @Column()
     password: string
-    
+
     @Column({ name: 'account_balance', default: 0 })
     account_balance: number
 
@@ -28,6 +28,9 @@ export class User {
 
     @Column({ default: true })
     isActive: boolean
+
+    @Column({ default: false })
+    isGoogle: boolean
 
     @Column({ type: 'timestamp', name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date

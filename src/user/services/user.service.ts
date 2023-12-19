@@ -60,6 +60,7 @@ export class UserService extends BaseService<User>{
         user.phone = dto.phone
         user.email = dto.google_email
         user.password = await this.hashing(nanoid(6))
+        user.isGoogle = true
         user.created_at = this.VNTime()
         user.updated_at = user.created_at
 
