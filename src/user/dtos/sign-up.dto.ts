@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, IsMobilePhone, IsDate, Length, MinLength, MaxLength, Matches, IsEmail, IsEnum } from "class-validator";
+import { IsNotEmpty, IsString, IsMobilePhone, IsDate, Length, MinLength, MaxLength, Matches, IsEmail, IsEnum, IsPhoneNumber } from "class-validator";
 import { Gender } from "../../config/enum.constants";
 
 export class SignUpDto {
@@ -16,7 +16,7 @@ export class SignUpDto {
     @IsNotEmpty()
     @IsString()
     @Length(8, 30)
-    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {message: 'password too weak'})
+    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, { message: 'password too weak' })
     @ApiProperty({ example: '12345678' })
     password: string
 
@@ -45,4 +45,21 @@ export class SignUpDto {
     @MaxLength(50)
     @ApiProperty({ example: 'HCM' })
     address: string
+}
+
+export class GoogleSignup {
+    @IsNotEmpty()
+    @IsEmail()
+    @ApiProperty({ example: "toidixincode@gmail.com" })
+    google_email: string
+
+    @IsNotEmpty()
+    @IsPhoneNumber()
+    @ApiProperty({ example: "+84389052819" })
+    phone: string
+
+    @IsNotEmpty()
+    @IsString()
+    @ApiProperty({ example: "Tran Huynh Tan Phat" })
+    full_name: string
 }

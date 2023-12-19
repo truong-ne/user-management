@@ -2,7 +2,7 @@ import { Body, Controller, Param, Get, Post, UseGuards, Req, Patch, UseIntercept
 import { UserService } from "../services/user.service";
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JwtGuard } from "../../auth/guards/jwt.guard";
-import { SignUpDto } from "../dtos/sign-up.dto";
+import { GoogleSignup, SignUpDto } from "../dtos/sign-up.dto";
 import { UpdateProfile } from "../dtos/update-profile.dto";
 import { Gender, Relationship } from "../../config/enum.constants";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
@@ -28,6 +28,16 @@ export class UserController {
     @Post()
     async signup(@Body() dto: SignUpDto): Promise<any> {
         return await this.userService.signup(dto)
+    }
+
+    @ApiOperation({ summary: 'Đăng ký dành cho người dùng bằng google', description: 'Đăng ký thành công sẽ tạo người dùng mới' })
+    @ApiParam({ name: 'gender', enum: Gender, required: false })
+    @ApiResponse({ status: 201, description: 'Thành công' })
+    @ApiResponse({ status: 400, description: 'Sai thông tin đăng ký của người dùng' })
+    @ApiResponse({ status: 409, description: 'Người dùng đã được đăng ký' })
+    @Post('google')
+    async signupGoogle(@Body() dto: GoogleSignup): Promise<any> {
+        return await this.userService.signupGoogle(dto)
     }
 
     @UseGuards(JwtGuard)
@@ -94,7 +104,7 @@ export class UserController {
     @Post('reset-password-forgot')
     async changePasswordForgot(
         @Body() dto: ChangePasswordForgotDto
-    ) {     
+    ) {
         return await this.userService.changePasswordForgot(dto)
     }
 
@@ -104,7 +114,7 @@ export class UserController {
     async depositMoney(
         @Param('money') money: number,
         @Req() req
-    ) {     
+    ) {
         return await this.userService.depositMoney(money, req.user.id)
     }
 }

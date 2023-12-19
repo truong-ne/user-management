@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "../../config/base.service";
 import { User } from "../entities/user.entity";
 import { Repository } from "typeorm";
-import { SignUpDto } from "../dtos/sign-up.dto";
+import { GoogleSignup, SignUpDto } from "../dtos/sign-up.dto";
 import { MedicalRecord } from "../entities/medical-record.entity";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
 import { ChangePasswordDto, ChangePasswordForgotDto } from "../dtos/change-password.dto";
@@ -41,6 +41,72 @@ export class UserService extends BaseService<User>{
             throw new NotFoundException('user_not_found')
 
         return user
+    }
+
+    async signupGoogle(dto: GoogleSignup): Promise<any> {
+        const checkPhone = await this.findUserByPhone(dto.phone)
+
+        if (checkPhone)
+            throw new ConflictException('phone_number_has_been_registered')
+
+        const checkEmail = await this.userRepository.findOne({
+            where: { email: dto.google_email }
+        })
+
+        if (checkEmail)
+            throw new ConflictException('email_has_been_registered')
+
+        const user = new User()
+        user.phone = dto.phone
+        user.email = dto.google_email
+        user.password = await this.hashing(nanoid(6))
+        user.created_at = this.VNTime()
+        user.updated_at = user.created_at
+
+        try {
+            await this.userRepository.save(user)
+        } catch (error) {
+            throw new BadRequestException('sign_up_failed')
+        }
+
+        const record = new MedicalRecord()
+        record.full_name = dto.full_name
+        record.avatar = "default"
+        record.isMainProfile = true
+        record.manager = user
+        record.updated_at = this.VNTime()
+
+        try {
+            await this.medicalRecordRepository.save(record)
+        } catch (error) {
+            await this.userRepository.remove(user)
+            throw new BadRequestException('sign_up_failed')
+        }
+
+        const users = await this.medicalRecordRepository.find({ where: { isMainProfile: true, manager: { id: user.id } }, relations: ['manager'] })
+
+        const data = []
+        users.forEach(u => {
+            data.push({
+                id: u.manager.id,
+                full_name: u.full_name,
+                date_of_birth: u.date_of_birth,
+                gender: u.gender,
+                avatar: u.avatar,
+                address: u.address,
+                account_balance: u.manager.account_balance,
+                email: u.manager.email,
+                phone: u.manager.phone,
+                update_at: u.updated_at
+            })
+        })
+
+        this.updateMeilisearch(data)
+
+        return {
+            "code": 201,
+            "message": "created"
+        }
     }
 
     async signup(dto: SignUpDto): Promise<any> {
@@ -225,7 +291,7 @@ export class UserService extends BaseService<User>{
             timeout: 10000,
         })
 
-        if(!rabbitmq || rabbitmq === '')
+        if (!rabbitmq || rabbitmq === '')
             throw new BadRequestException('send_email_failed')
 
         await this.mailer(checkEmail.email, rabbitmq)
@@ -255,9 +321,9 @@ export class UserService extends BaseService<User>{
                 timeout: 10000,
             })
 
-            if(rabbitmq) {
+            if (rabbitmq) {
                 user.password = await this.hashing(dto.password)
-            } else 
+            } else
                 throw new BadRequestException('otp_expired')
         }
 

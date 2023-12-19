@@ -19,10 +19,10 @@ export class MedicalRecord {
     @Column({ name: 'full_name' })
     full_name: string
 
-    @Column({ type: 'timestamp', name: 'date_of_birth' })
+    @Column({ type: 'timestamp', name: 'date_of_birth', nullable: true })
     date_of_birth: Date
 
-    @Column({ name: 'gender', type: 'enum', enum: Gender })
+    @Column({ name: 'gender', type: 'enum', enum: Gender, nullable: true })
     gender: string
 
     @Column({ name: 'relationship', type: 'enum', enum: Relationship, nullable: true })
