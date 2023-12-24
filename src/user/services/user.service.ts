@@ -228,7 +228,11 @@ export class UserService extends BaseService<User>{
         const user = await this.findUserById(id)
 
         if (dto.password !== dto.passwordConfirm)
-            throw new BadRequestException('password_incorrect')
+            throw new BadRequestException('password_not_match')
+        else if(dto.oldPassword !== user.password)
+            throw new BadRequestException('current_password_wrong')
+        else if(dto.password === dto.oldPassword)
+            throw new BadRequestException('password_same_current_password')
         else
             user.password = await this.hashing(dto.password)
 

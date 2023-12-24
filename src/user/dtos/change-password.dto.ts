@@ -2,6 +2,11 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty, IsString, Length, Matches } from "class-validator";
 
 export class ChangePasswordDto {
+    @IsString()
+    @Length(8, 30)
+    @ApiProperty({ example: '12345678' })
+    oldPassword: string;
+
     @IsNotEmpty()
     @IsString()
     @Length(8, 30)
