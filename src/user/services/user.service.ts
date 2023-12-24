@@ -227,14 +227,12 @@ export class UserService extends BaseService<User>{
     async changeUserPassword(dto: ChangePasswordDto, id: string): Promise<any> {
         const user = await this.findUserById(id)
 
-        if (dto.password !== dto.passwordConfirm)
-            throw new BadRequestException('password_not_match')
-        else if(dto.oldPassword !== user.password)
+        if(dto.password !== user.password)
             throw new BadRequestException('current_password_wrong')
-        else if(dto.password === dto.oldPassword)
+        else if(dto.password === dto.new_password)
             throw new BadRequestException('password_same_current_password')
         else
-            user.password = await this.hashing(dto.password)
+            user.password = await this.hashing(dto.new_password)
 
         try {
             await this.userRepository.save(user)

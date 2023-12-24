@@ -5,19 +5,14 @@ export class ChangePasswordDto {
     @IsString()
     @Length(8, 30)
     @ApiProperty({ example: '12345678' })
-    oldPassword: string;
+    password: string;
 
     @IsNotEmpty()
     @IsString()
     @Length(8, 30)
     @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {message: 'password too weak'})
     @ApiProperty({ example: '12345678' })
-    password: string
-
-    @IsString()
-    @Length(8, 30)
-    @ApiProperty({ example: '12345678' })
-    passwordConfirm: string;
+    new_password: string
 }
 
 export class ChangePasswordForgotDto {
