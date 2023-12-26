@@ -10,13 +10,15 @@ import { UserService } from "./user.service";
 import { Gender, Relationship } from "../../config/enum.constants";
 import { AddMedicalRecordDto } from "../dtos/add-medical-record.dto";
 import { IsDate } from "class-validator";
+import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 
 @Injectable()
 export class MedicalRecordService extends BaseService<MedicalRecord>{
     constructor(
         private readonly userService: UserService,
         @InjectRepository(MedicalRecord) private readonly medicalRecordRepository: Repository<MedicalRecord>,
-        @InjectRepository(User) private readonly userRepository: Repository<User>
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
+        private readonly amqpConnection: AmqpConnection
 
     ) {
         super(medicalRecordRepository)
@@ -83,7 +85,7 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
     }
 
     async getAllMedicalRecordByUserId(id: string): Promise<any> {
-        const user = await this.userRepository.findOne({ where: { 'id': id }, relations: ['medicalRecords'] })
+        const user = await this.userRepository.findOne({ where: { 'id': id, medicalRecords: { isDeleted: false } }, relations: ['medicalRecords'] })
 
         if (!user)
             throw new NotFoundException('user_not_found')
@@ -137,8 +139,20 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
         else if (record.isMainProfile === true)
             throw new MethodNotAllowedException('Deletion_of_this_medical_record_is_not_allowed')
 
+        const check = await this.amqpConnection.request<any>({
+            exchange: 'healthline.user.information',
+            routingKey: 'check_medical',
+            payload: record.id,
+            timeout: 10000,
+        })
+
+        if(!check) {
+            throw new MethodNotAllowedException('Deletion_of_this_medical_record_is_not_allowed')
+        }
+        
         try {
-            await this.medicalRecordRepository.remove(record)
+            record.isDeleted = true
+            await this.medicalRecordRepository.save(record)
         } catch (error) {
             throw new BadRequestException('delete_medical_record_failed')
         }

@@ -37,6 +37,9 @@ export class MedicalRecord {
     @Column({ name: 'is_main_profile', default: false })
     isMainProfile: boolean
 
+    @Column({ name: 'is_deleted', default: false })
+    isDeleted: boolean
+
     @Column({ type: 'timestamp', name: 'update_at', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     updated_at: Date;
 }
