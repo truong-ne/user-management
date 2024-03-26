@@ -240,7 +240,8 @@ export class UserService extends BaseService<User>{
 
         return {
             "code": 200,
-            "message": "success"
+            "message": "success",
+            "data": rabbitmq
         }
     }
 
