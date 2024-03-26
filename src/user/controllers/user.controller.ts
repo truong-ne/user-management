@@ -104,6 +104,15 @@ export class UserController {
     }
 
     @UseGuards(JwtGuard)
+    @Post('wish-list/un')
+    async removeDoctorWishList(
+        @Body() doctorId: string,
+        @Req() req
+    ) {
+        return await this.userService.removeDoctorWishList(req.user.id, doctorId)
+    }
+
+    @UseGuards(JwtGuard)
     @Get('wish-list')
     async getDoctorWishList(
         @Req() req

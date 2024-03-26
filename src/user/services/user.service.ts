@@ -225,6 +225,25 @@ export class UserService extends BaseService<User>{
         }
     }
 
+    async removeDoctorWishList(id: string, doctorId: string): Promise<any> {
+        const user = await this.findUserById(id)
+
+        user.wish_list = user.wish_list.filter(function(item) {
+            return item !== doctorId;
+          });
+
+        try {
+            await this.userRepository.save(user)
+        } catch (error) {
+            throw new BadRequestException('remove_wish_lish_failed')
+        }
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    }
+
     async getDoctorWishList(id: string): Promise<any> {
         const user = await this.findUserById(id)
 
