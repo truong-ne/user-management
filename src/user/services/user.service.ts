@@ -202,7 +202,8 @@ export class UserService extends BaseService<User>{
                 "date_of_birth": main_record.date_of_birth,
                 "gender": main_record.gender,
                 "avatar": main_record.avatar,
-                "address": main_record.address
+                "address": main_record.address,
+                "point": user.point
             }
         }
     }
