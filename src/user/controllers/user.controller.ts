@@ -97,7 +97,7 @@ export class UserController {
     @UseGuards(JwtGuard)
     @Post('wish-list')
     async addDoctorWishList(
-        @Param('doctorId') doctorId: string,
+        @Body() doctorId: string,
         @Req() req
     ) {
         return await this.userService.addDoctorWishList(req.user.id, doctorId)
