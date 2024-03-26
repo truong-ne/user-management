@@ -211,7 +211,14 @@ export class UserService extends BaseService<User>{
     async addDoctorWishList(id: string, doctorId: string): Promise<any> {
         const user = await this.findUserById(id)
 
-        user.wish_list.push(doctorId)
+        const length = user.wish_list.length
+
+        user.wish_list = user.wish_list.filter(function(item) {
+            return item !== doctorId;
+        });
+
+        if(user.wish_list.length === length)
+            user.wish_list.push(doctorId)
 
         try {
             await this.userRepository.save(user)

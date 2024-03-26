@@ -97,19 +97,10 @@ export class UserController {
     @UseGuards(JwtGuard)
     @Post('wish-list')
     async addDoctorWishList(
-        @Body() doctorId: string,
+        @Body("doctorId") doctorId: string,
         @Req() req
     ) {
         return await this.userService.addDoctorWishList(req.user.id, doctorId)
-    }
-
-    @UseGuards(JwtGuard)
-    @Post('wish-list/un')
-    async removeDoctorWishList(
-        @Body() doctorId: string,
-        @Req() req
-    ) {
-        return await this.userService.removeDoctorWishList(req.user.id, doctorId)
     }
 
     @UseGuards(JwtGuard)
