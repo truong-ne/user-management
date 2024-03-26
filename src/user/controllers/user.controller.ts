@@ -115,7 +115,7 @@ export class UserController {
     async forgetPassword(
         @Param('gmail') gmail: string
     ) {
-        return await this.userService.forgetPassword(gmail)
+        return await this.userService.forgetPassword(gmail) 
     }
 
     @Post('reset-password-forgot')
