@@ -94,6 +94,23 @@ export class UserController {
         return await this.userService.adminChangeUserPassword(userId)
     }
 
+    @UseGuards(JwtGuard)
+    @Post('wish-list')
+    async addDoctorWishList(
+        @Param('doctorId') doctorId: string,
+        @Req() req
+    ) {
+        return await this.userService.addDoctorWishList(req.user.id, doctorId)
+    }
+
+    @UseGuards(JwtGuard)
+    @Get('wish-list')
+    async getDoctorWishList(
+        @Req() req
+    ) {
+        return await this.userService.getDoctorWishList(req.user.id)
+    }
+
     @Post('forget-password/:gmail')
     async forgetPassword(
         @Param('gmail') gmail: string

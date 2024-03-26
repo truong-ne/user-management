@@ -207,6 +207,42 @@ export class UserService extends BaseService<User>{
         }
     }
 
+    async addDoctorWishList(id: string, doctorId: string): Promise<any> {
+        const user = await this.findUserById(id)
+
+        user.wish_list.push(doctorId)
+
+        try {
+            await this.userRepository.save(user)
+        } catch (error) {
+            throw new BadRequestException('add_wish_lish_failed')
+        }
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    }
+
+    async getDoctorWishList(id: string): Promise<any> {
+        const user = await this.findUserById(id)
+
+        const rabbitmq = await this.amqpConnection.request<any>({
+            exchange: 'healthline.doctor.information',
+            routingKey: 'doctor',
+            payload: user.wish_list,
+            timeout: 10000,
+        })
+
+        if(!rabbitmq)
+            throw new BadRequestException('get_wish_list_failed')
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    }
+
     async changeUserEmail(dto: ChangeEmailDto, id: string): Promise<any> {
         const user = await this.findUserById(id)
 
