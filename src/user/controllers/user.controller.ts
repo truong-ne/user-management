@@ -48,11 +48,11 @@ export class UserController {
     @ApiResponse({ status: 404, description: 'Không tìm thấy tài khoản' })
     @Get()
     async getUserLogin(@Req() req): Promise<any> {
-        const cacheSchedules = await this.cacheManager.get('user-' + req.user.id);
-        if (cacheSchedules) return cacheSchedules
+        // const cacheSchedules = await this.cacheManager.get('user-' + req.user.id);
+        // if (cacheSchedules) return cacheSchedules
 
         const data = await this.userService.getUserLogin(req.user.id)
-        await this.cacheManager.set('user-' + req.user.id, data)
+        // await this.cacheManager.set('user-' + req.user.id, data)
 
         return data
     }
