@@ -134,4 +134,13 @@ export class UserController {
     ) {
         return await this.userService.depositMoney(money, req.user.id)
     }
+
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @Get('/admin/:id')
+    async getUserLoginByAdmin(@Param('id') id: string): Promise<any> {
+        const data = await this.userService.getUserLogin(id)
+
+        return data
+    }
 }

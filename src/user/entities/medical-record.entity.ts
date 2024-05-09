@@ -40,6 +40,9 @@ export class MedicalRecord {
     @Column({ name: 'is_deleted', default: false })
     isDeleted: boolean
 
+    @Column({ type: 'timestamp', name: 'created_at', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+    created_at: Date;
+
     @Column({ type: 'timestamp', name: 'update_at', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     updated_at: Date;
 }

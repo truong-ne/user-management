@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, MethodNotAllowedException, NotFoundExc
 import { BaseService } from "../../config/base.service";
 import { MedicalRecord } from "../entities/medical-record.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { In, Repository } from "typeorm";
+import { Between, In, Repository } from "typeorm";
 import { SignUpDto } from "../dtos/sign-up.dto";
 import { User } from "../entities/user.entity";
 import { UpdateProfile } from "../dtos/update-profile.dto";
@@ -116,7 +116,8 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
         record.relationship = dto.relationship
         record.avatar = dto.avatar
         record.address = dto.address
-        record.updated_at = this.VNTime()
+        record.created_at = this.VNTime()
+        record.updated_at = record.created_at
         record.manager = user
 
         try {
@@ -188,6 +189,47 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
             "message": "success",
             "data": data
         }
+    }
+
+    
+    async rangeAge(ids: string[], year: number) {
+        const medicals = await this.medicalRecordRepository.find({ where: { id: In(ids) } })
+        var rangeAge = [0,0,0,0,0]
+        medicals.forEach(m => {
+            if(year - m.date_of_birth.getFullYear() < 10)
+                rangeAge[0] += 1
+            else if(year - m.date_of_birth.getFullYear() < 30)
+                rangeAge[1] += 1
+            else if(year - m.date_of_birth.getFullYear() < 40)
+                rangeAge[2] += 1
+            else if(year - m.date_of_birth.getFullYear() < 50)
+                rangeAge[3] += 1
+            else if(year - m.date_of_birth.getFullYear() >= 50)
+                rangeAge[4] += 1
+        })
+
+        return rangeAge
+    }
+
+    async medicalByMonth(ids: string[], year: number) {
+        var newMedical = []
+        for (let month = 0; month < 12; month++) {
+            const startOfMonth = new Date(year, month, 1); // Ngày bắt đầu (1/1/2023)
+            const endOfMonth = new Date(year, month + 1, 0); // Ngày kết thúc (9/12/2023)
+
+            const medicals = await this.medicalRecordRepository.count({
+                where: { 
+                    id: In(ids),
+                    created_at: Between(startOfMonth, endOfMonth)
+                }
+            })
+            newMedical.push({
+                oldMedical: 0,
+                newMedical: medicals
+            })
+        }
+
+        return newMedical
     }
 
     async getQuantityPatient(): Promise<any> {
