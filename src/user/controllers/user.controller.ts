@@ -153,4 +153,12 @@ export class UserController {
 
         return data
     }
+
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Admin dừng hoạt động của bs' })
+    @Get('admin/user/ban/:user_id')
+    async disactiveUser(@Param('user_id') user_id: string) {
+        return await this.userService.disactiveUser(user_id)
+    }
 }

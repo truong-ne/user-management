@@ -304,6 +304,23 @@ export class UserService extends BaseService<User>{
         }
     }
 
+    async disactiveUser(id: string) {
+        const user = await this.userRepository.findOne({
+            where: { id: id }
+        })
+
+        if (!user)
+            throw new NotFoundException('user_not_found')
+
+        user.isActive = false
+        await this.userRepository.save(user)
+
+        return {
+            "code": 200,
+            "message": "success"
+        }
+    } 
+
     async adminChangeUserPassword(id: string): Promise<any> {
         const user = await this.findUserById(id)
 
