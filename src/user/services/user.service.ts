@@ -433,14 +433,14 @@ export class UserService extends BaseService<User>{
         for (let month = 0; month < 12; month++) {
             const startOfMonth = new Date(year, month, 1);
             const endOfMonth = new Date(year, month + 1, 0);
-            let userThisMonth = await this.userRepository.find({ where: {
+            const userThisMonth = await this.userRepository.find({ where: {
                 created_at: Between(startOfMonth, endOfMonth),
             }});
 
             if (userThisMonth !== null) {
                 userByMonth.push({
                     month: month + 1,
-                    totalUserThisMonth: userByMonth.length
+                    totalUserThisMonth: userThisMonth.length
                 });
             } else {
                 userByMonth.push({
