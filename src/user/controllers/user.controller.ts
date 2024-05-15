@@ -143,4 +143,14 @@ export class UserController {
 
         return data
     }
+
+    @UseGuards(AdminGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Người dùng mới theo tháng/năm' })
+    @Get('/admin/user/:year')
+    async newUserStatistic(@Param('year') year: number): Promise<any> {
+        const data = await this.userService.newUserStatistic(year)
+
+        return data
+    }
 }

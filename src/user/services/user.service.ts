@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ConflictException, BadRequestException, 
 import { InjectRepository } from "@nestjs/typeorm";
 import { BaseService } from "../../config/base.service";
 import { User } from "../entities/user.entity";
-import { Repository } from "typeorm";
+import { Between, Repository } from "typeorm";
 import { GoogleSignup, SignUpDto } from "../dtos/sign-up.dto";
 import { MedicalRecord } from "../entities/medical-record.entity";
 import { ChangeEmailDto } from "../dtos/change-email.dto";
@@ -423,6 +423,40 @@ export class UserService extends BaseService<User>{
             },
             body: JSON.stringify(data),
         });
+    }
+
+    //    
+    //  Statistics for user
+    //  
+    async newUserStatistic(year: number) {
+        const userByMonth = [];
+        for (let month = 0; month < 12; month++) {
+            const startOfMonth = new Date(year, month, 1);
+            const endOfMonth = new Date(year, month + 1, 0);
+            let userThisMonth = await this.userRepository.find({ where: {
+                created_at: Between(startOfMonth, endOfMonth),
+            }});
+
+            if (userThisMonth !== null) {
+                userByMonth.push({
+                    month: month + 1,
+                    totalUserThisMonth: userByMonth.length
+                });
+            } else {
+                userByMonth.push({
+                    month: month + 1,
+                    totalUserThisMonth: 0
+                });
+            }
+        }
+
+        return {
+            code: 200,
+            message: "success",
+            data: {
+                userByMonth: userByMonth
+            }
+        };
     }
 
     @Cron(CronExpression.EVERY_10_MINUTES)

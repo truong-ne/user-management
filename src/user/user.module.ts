@@ -9,6 +9,7 @@ import { MedicalRecordService } from "./services/medical-record.service";
 import * as dotenv from 'dotenv'
 import { ScheduleModule } from "@nestjs/schedule";
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { MedicalConsumer } from "./consumers/medical.consumer";
 
 dotenv.config()
 
@@ -33,7 +34,7 @@ dotenv.config()
         TypeOrmModule.forFeature([User, MedicalRecord]),
     ],
     controllers: [UserController, MedicalRecordController],
-    providers: [UserService, MedicalRecordService],
+    providers: [UserService, MedicalRecordService, MedicalConsumer],
 })
 export class UserModule {
 
