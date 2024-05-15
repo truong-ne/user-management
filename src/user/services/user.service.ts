@@ -204,7 +204,8 @@ export class UserService extends BaseService<User>{
                 "avatar": main_record.avatar,
                 "address": main_record.address,
                 "point": user.point,
-                "wish_list": user.wish_list
+                "wish_list": user.wish_list,
+                "isActive": user.isActive
             }
         }
     }
@@ -314,6 +315,8 @@ export class UserService extends BaseService<User>{
 
         user.isActive = false
         await this.userRepository.save(user)
+
+        this.getAllUsers()
 
         return {
             "code": 200,
@@ -492,6 +495,7 @@ export class UserService extends BaseService<User>{
                 account_balance: u.manager.account_balance,
                 email: u.manager.email,
                 phone: u.manager.phone,
+                isActive: u.manager.isActive,
                 created_at: u.manager.created_at,
                 update_at: u.updated_at
             })
