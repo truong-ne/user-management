@@ -194,26 +194,27 @@ export class MedicalRecordService extends BaseService<MedicalRecord>{
     
     async rangeAge(ids: string[], year: number) {
         const medicals = await this.medicalRecordRepository.find({ where: { id: In(ids) } })
-        var rangeAge = {}
+        var rangeAge = {
+            '0-10': [],
+            '10-30': [],
+            '30-40': [],
+            '40-50': [],
+            'Trên 50': []
+        }
         medicals.forEach(m => {
             if(year - m.date_of_birth.getFullYear() < 10) {
-                rangeAge['0-10'] = []
                 rangeAge['0-10'].push(m.id)
             }
             else if(year - m.date_of_birth.getFullYear() < 30) {
-                rangeAge['10-30'] = []
                 rangeAge['10-30'].push(m.id)
             }
             else if(year - m.date_of_birth.getFullYear() < 40) {
-                rangeAge['30-40'] = []
                 rangeAge['30-40'].push(m.id)
             }
             else if(year - m.date_of_birth.getFullYear() < 50) {
-                rangeAge['40-50'] = []
                 rangeAge['40-50'].push(m.id)
             }
             else if(year - m.date_of_birth.getFullYear() >= 50) {
-                rangeAge['Trên 50'] = []
                 rangeAge['Trên 50'].push(m.id)
             }
         })

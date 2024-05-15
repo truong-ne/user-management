@@ -13,7 +13,7 @@ export class MedicalConsumer {
         routingKey: 'range_age', 
         queue: 'range_age',
     })
-    async rangeAge(ids: string[], year: number): Promise<any> {
-        return await this.medicalRecordService.rangeAge(ids, year)
+    async rangeAge(payload: any): Promise<any> {
+        return await this.medicalRecordService.rangeAge(payload.ids, payload.year)
     }
 }
