@@ -165,7 +165,7 @@ export class UserController {
 
 
     @ApiOperation({ summary: 'Momo' })
-    @Get('/admin/momo')
+    @Get('/momo')
     async test(): Promise<any> {
         const date = new Date().getTime();
         const requestId = date + "id";
