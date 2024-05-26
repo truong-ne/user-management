@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisClientOptions } from 'redis';
 import { dataSourceOptions } from '../db/data-source';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { dataSourceOptions } from '../db/data-source';
       ...redisClientOption
     }),
     UserModule,
-    AuthModule
+    AuthModule,
+    TransactionModule
   ],
 })
 export class AppModule { }

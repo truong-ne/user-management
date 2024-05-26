@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { nanoid } from "nanoid";
 import { MedicalRecord } from "./medical-record.entity";
+import { Transaction } from "../../transaction/entities/transaction.entity";
 
 @Entity({ name: 'Users' })
 export class User {
@@ -46,4 +47,7 @@ export class User {
 
     @OneToMany(() => MedicalRecord, medicalRecord => medicalRecord.manager, { onDelete: 'CASCADE' })
     medicalRecords: MedicalRecord[]
+
+    @OneToMany(() => Transaction, transaction => transaction.user)
+    transactions: Transaction[]
 }
