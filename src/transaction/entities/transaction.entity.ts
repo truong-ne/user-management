@@ -24,6 +24,9 @@ export class Transaction {
     @Column()
     amount: number
 
+    @Column({ type: 'json', nullable: true })
+    actor: JSON
+
     @Column({ name: 'type_paid', type: 'enum', enum: TypePaid, default: TypePaid.CashIn })
     typePaid: string
 

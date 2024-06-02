@@ -103,10 +103,25 @@ export class TransactionService extends BaseService<Transaction> {
     async UserTransactionHistory(userId: string) {
         const transactions = await this.transactionRepository.find({ where: { user: { id: userId } }, relations: ['user'] })
 
+        const data = []
+        transactions.forEach(t => {
+            data.push({
+                id: t.id,
+                requestId: t.requestId,
+                orderId: t.orderId,
+                amount: t.amount,
+                actor: t.actor,
+                isPaid: t.isPaid,
+                typePaid: t.typePaid,
+                created_at: t.created_at,
+                updated_at: t.updated_at
+            })
+        })
+
         return {
             code: 200,
             message: 'success',
-            data: transactions
+            data: data
         }
     }
 
@@ -135,8 +150,122 @@ export class TransactionService extends BaseService<Transaction> {
 
     async DoctorTransactionHistory(doctorId: string) {
         const transactions = await this.transactionRepository.find({ where: { doctor: doctorId } })
+        const data = []
+        transactions.forEach(t => {
+            data.push({
+                id: t.id,
+                requestId: t.requestId,
+                orderId: t.orderId,
+                amount: t.amount,
+                actor: t.actor,
+                isPaid: t.isPaid,
+                typePaid: t.typePaid,
+                created_at: t.created_at,
+                updated_at: t.updated_at
+            })
+        })
 
         return transactions
+    }
+
+    //Transation type
+    async UserOrderConsultation(userId: string, doctor: any, amount: number) {
+        const user = await this.userRepository.findOneBy({ id: userId })
+
+        const date = new Date().getTime();
+        const requestId = date + "healthline";
+        const orderId = date + ":healthline";
+
+        const transaction = this.transactionRepository.create({
+            amount: amount,
+            orderId: orderId,
+            requestId: requestId,
+            user: user,
+            actor: doctor,
+            typePaid: TypePaid.Send,
+            isPaid: true
+        })
+
+        // save transaction
+        await this.transactionRepository.save(transaction)
+    }
+
+    async DoctorDeniedConsultation(userId: string, doctor: any, amount: number) {
+        const user = await this.userRepository.findOneBy({ id: userId })
+
+        const date = new Date().getTime();
+        const requestId = date + "healthline";
+        const orderId = date + ":healthline";
+
+        const transaction = this.transactionRepository.create({
+            amount: amount,
+            orderId: orderId,
+            requestId: requestId,
+            user: user,
+            actor: doctor,
+            typePaid: TypePaid.Receive,
+            isPaid: true
+        })
+
+        // save transaction
+        await this.transactionRepository.save(transaction)
+    }
+
+    async UserCancelConsultation(userId: any, doctor: any, amount: number) {
+        const user = await this.userRepository.findOneBy({ id: userId.id })
+
+        const date = new Date().getTime();
+        const requestId = date + "healthline";
+        const orderId = date + ":healthline";
+
+        const user_transaction = this.transactionRepository.create({
+            amount: amount / 100 * 70,
+            orderId: orderId,
+            requestId: requestId,
+            user: user,
+            actor: doctor,
+            typePaid: TypePaid.Receive,
+            isPaid: true
+        })
+
+        const actor = {
+            id: user.id,
+            name: userId.name,
+            avatar: userId.avatar
+        } as any
+
+        const doctor_transaction = this.transactionRepository.create({
+            amount: amount / 100 * 30,
+            orderId: orderId,
+            requestId: requestId,
+            doctor: doctor.id,
+            actor: actor,
+            typePaid: TypePaid.Receive,
+            isPaid: true
+        })
+
+        // save transaction
+        await this.transactionRepository.save(user_transaction)
+        await this.transactionRepository.save(doctor_transaction)
+
+    }
+
+    async DoctorFinishedConsultation(doctorId: string, user: any, amount: number) {
+        const date = new Date().getTime();
+        const requestId = date + "healthline";
+        const orderId = date + ":healthline";
+        const transaction = this.transactionRepository.create({
+            amount: amount,
+            orderId: orderId,
+            requestId: requestId,
+            doctor: doctorId,
+            actor: user,
+            typePaid: TypePaid.Receive,
+            isPaid: true
+        })
+
+        // save transaction
+        await this.transactionRepository.save(transaction)
     }
 
     private async paymentMomo(amount: string): Promise<any> {
