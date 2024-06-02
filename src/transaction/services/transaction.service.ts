@@ -54,6 +54,34 @@ export class TransactionService extends BaseService<Transaction> {
             }
         }
     }
+    //User Payment
+    async HealthlinePaymentCashOut(userId: string, amount: number) {
+        const user = await this.userRepository.findOneBy({ id: userId })
+
+        const date = new Date().getTime();
+        const requestId = date + "healthline";
+        const orderId = date + ":healthline";
+        const transaction = this.transactionRepository.create({
+            amount: amount,
+            orderId: orderId,
+            requestId: requestId,
+            user: user,
+            typePaid: false,
+            isPaid: true
+        })
+
+        // save transaction
+        await this.transactionRepository.save(transaction)
+
+        await this.userRepository.update({ id: userId }, {
+            account_balance: user.account_balance - transaction.amount
+        })
+        
+        return {
+            code: 200,
+            message: 'success'
+        }
+    }
 
     async HealthlinePaymentCashIn(userId: string, amount: number) {
         const user = await this.userRepository.findOneBy({ id: userId })
@@ -68,6 +96,45 @@ export class TransactionService extends BaseService<Transaction> {
         // save transaction
         await this.transactionRepository.save(transaction)
         return cashIn
+    }
+
+    async UserTransactionHistory(userId: string) {
+        const transactions = await this.transactionRepository.find({ where: { user: { id: userId } }, relations: ['user'] })
+
+        return {
+            code: 200,
+            message: 'success',
+            data: transactions
+        }
+    }
+
+    //Doctor Payment
+    async DoctorPaymentCashOut(doctor: string, amount: number) {
+        const date = new Date().getTime();
+        const requestId = date + "healthline";
+        const orderId = date + ":healthline";
+        const transaction = this.transactionRepository.create({
+            amount: amount,
+            orderId: orderId,
+            requestId: requestId,
+            doctor: doctor,
+            typePaid: false,
+            isPaid: true
+        })
+
+        // save transaction
+        await this.transactionRepository.save(transaction)
+        
+        return {
+            doctor: doctor,
+            amount: amount
+        }
+    }
+
+    async DoctorTransactionHistory(doctorId: string) {
+        const transactions = await this.transactionRepository.find({ where: { doctor: doctorId } })
+
+        return transactions
     }
 
     private async paymentMomo(amount: string): Promise<any> {

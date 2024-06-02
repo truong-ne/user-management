@@ -23,6 +23,9 @@ export class Transaction {
     @Column()
     amount: number
 
+    @Column({ default: true })
+    typePaid: boolean
+
     @Column({ type: 'timestamp', name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date
 
@@ -32,4 +35,7 @@ export class Transaction {
     @ManyToOne(() => User, user => user.transactions, { onDelete: 'SET NULL' })
     @JoinColumn({ name: 'user' })
     user: User
+
+    @Column({ nullable: true })
+    doctor: string
 }
