@@ -7,6 +7,7 @@ import * as CryptoJS from 'crypto-js'
 import { TransactionDto } from '../dto/transaction.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { User } from '../../user/entities/user.entity';
+import { TypePaid } from 'src/config/enum.constants';
 
 @Injectable()
 export class TransactionService extends BaseService<Transaction> {
@@ -66,7 +67,7 @@ export class TransactionService extends BaseService<Transaction> {
             orderId: orderId,
             requestId: requestId,
             user: user,
-            typePaid: false,
+            typePaid: TypePaid.CashOut,
             isPaid: true
         })
 
@@ -91,7 +92,8 @@ export class TransactionService extends BaseService<Transaction> {
             amount: amount,
             orderId: cashIn.orderId,
             requestId: cashIn.requestId,
-            user: user
+            user: user,
+            typePaid: TypePaid.CashIn
         })
         // save transaction
         await this.transactionRepository.save(transaction)
@@ -118,7 +120,7 @@ export class TransactionService extends BaseService<Transaction> {
             orderId: orderId,
             requestId: requestId,
             doctor: doctor,
-            typePaid: false,
+            typePaid: TypePaid.CashOut,
             isPaid: true
         })
 

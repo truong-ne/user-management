@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { TransactionService } from '../services/transaction.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
 import { TransactionDto } from '../dto/transaction.dto';
 
@@ -11,6 +11,7 @@ export class TransactionController {
 
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Người dùng nạp tiền' })
   @Post()
   async cashIn(
     @Req() req,
@@ -27,7 +28,8 @@ export class TransactionController {
 
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
-  @Post()
+  @ApiOperation({ summary: 'Người dùng rút tiền' })
+  @Post('/cash-out')
   async cashOut(
     @Req() req,
     @Body() dto: TransactionDto,
@@ -37,6 +39,7 @@ export class TransactionController {
 
   @UseGuards(JwtGuard)
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Lịch sử giao dịch' })
   @Get()
   async TransactionHistory(
     @Req() req

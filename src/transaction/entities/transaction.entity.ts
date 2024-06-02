@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import { User } from "../../user/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { TypePaid } from "src/config/enum.constants";
 
 @Entity({ name: 'Transactions' })
 export class Transaction {
@@ -23,8 +24,8 @@ export class Transaction {
     @Column()
     amount: number
 
-    @Column({ default: true })
-    typePaid: boolean
+    @Column({ name: 'type_paid', type: 'enum', enum: TypePaid, default: TypePaid.CashIn })
+    typePaid: string
 
     @Column({ type: 'timestamp', name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date
