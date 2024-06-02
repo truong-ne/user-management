@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Transaction } from './entities/transaction.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { User } from '../user/entities/user.entity';
+import { TransactionConsumer } from './consumers/transaction.consumer';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { User } from '../user/entities/user.entity';
     ScheduleModule.forRoot()
   ],
   controllers: [TransactionController],
-  providers: [TransactionService],
+  providers: [TransactionService, TransactionConsumer],
 })
 export class TransactionModule { }
