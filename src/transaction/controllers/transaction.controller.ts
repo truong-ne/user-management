@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { TransactionService } from '../services/transaction.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../../auth/guards/jwt.guard';
@@ -23,5 +23,24 @@ export class TransactionController {
       data: res,
       message: 'successfully'
     }
+  }
+
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @Post()
+  async cashOut(
+    @Req() req,
+    @Body() dto: TransactionDto,
+  ) {
+    return await this.transactionService.HealthlinePaymentCashOut(req.user.id, dto.amount)
+  }
+
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @Get()
+  async TransactionHistory(
+    @Req() req
+  ) {
+    return await this.transactionService.UserTransactionHistory(req.user.id)
   }
 }
