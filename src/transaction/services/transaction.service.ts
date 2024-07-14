@@ -59,7 +59,7 @@ export class TransactionService extends BaseService<Transaction> {
     async HealthlinePaymentCashOut(userId: string, amount: number) {
         const user = await this.userRepository.findOneBy({ id: userId })
 
-        const date = new Date().getTime();
+        const date = this.VNTime();
         const requestId = date + "healthline";
         const orderId = date + ":healthline";
         const transaction = this.transactionRepository.create({
@@ -130,7 +130,7 @@ export class TransactionService extends BaseService<Transaction> {
 
     //Doctor Payment
     async DoctorPaymentCashOut(doctor: string, amount: number) {
-        const date = new Date().getTime();
+        const date = this.VNTime();
         const requestId = date + "healthline";
         const orderId = date + ":healthline";
         const transaction = this.transactionRepository.create({
@@ -175,7 +175,7 @@ export class TransactionService extends BaseService<Transaction> {
     async UserOrderConsultation(userId: string, doctor: any, amount: number) {
         const user = await this.userRepository.findOneBy({ id: userId })
 
-        const date = new Date().getTime();
+        const date = this.VNTime();
         const requestId = date + "healthline";
         const orderId = date + ":healthline";
 
@@ -196,7 +196,7 @@ export class TransactionService extends BaseService<Transaction> {
     async DoctorDeniedConsultation(userId: string, doctor: any, amount: number) {
         const user = await this.userRepository.findOneBy({ id: userId })
 
-        const date = new Date().getTime();
+        const date = this.VNTime();
         const requestId = date + "healthline";
         const orderId = date + ":healthline";
 
@@ -217,7 +217,7 @@ export class TransactionService extends BaseService<Transaction> {
     async UserCancelConsultation(userId: any, doctor: any, amount: number) {
         const user = await this.userRepository.findOneBy({ id: userId.id })
 
-        const date = new Date().getTime();
+        const date = this.VNTime();
         const requestId = date + "healthline";
         const orderId = date + ":healthline";
 
@@ -254,7 +254,7 @@ export class TransactionService extends BaseService<Transaction> {
     }
 
     async DoctorFinishedConsultation(doctorId: string, user: any, amount: number) {
-        const date = new Date().getTime();
+        const date = this.VNTime();
         const requestId = date + "healthline";
         const orderId = date + ":healthline";
         const transaction = this.transactionRepository.create({
@@ -272,7 +272,7 @@ export class TransactionService extends BaseService<Transaction> {
     }
 
     private async paymentMomo(amount: string): Promise<any> {
-        const date = new Date().getTime();
+        const date = this.VNTime();
         const requestId = date + "healthline";
         const orderId = date + ":healthline";
         const autoCapture = true;
