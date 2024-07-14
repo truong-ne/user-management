@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { BaseService } from '../../config/base.service';
 import { Transaction } from '../entities/transaction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -70,6 +70,9 @@ export class TransactionService extends BaseService<Transaction> {
             typePaid: TypePaid.CashOut,
             isPaid: true
         })
+
+        if(user.account_balance < transaction.amount)
+            throw new BadRequestException('not_enough_money')
 
         // save transaction
         await this.transactionRepository.save(transaction)
