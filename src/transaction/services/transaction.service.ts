@@ -98,7 +98,9 @@ export class TransactionService extends BaseService<Transaction> {
             orderId: cashIn.orderId,
             requestId: cashIn.requestId,
             user: user,
-            typePaid: TypePaid.CashIn
+            typePaid: TypePaid.CashIn,
+            updated_at: this.VNTime(),
+            created_at: this.VNTime()
         })
         // save transaction
         await this.transactionRepository.save(transaction)
@@ -106,7 +108,7 @@ export class TransactionService extends BaseService<Transaction> {
     }
 
     async UserTransactionHistory(userId: string) {
-        const transactions = await this.transactionRepository.find({ where: { user: { id: userId } }, relations: ['user'] })
+        const transactions = await this.transactionRepository.find({ where: { user: { id: userId } }, relations: ['user'], order: { created_at: 'desc'} })
 
         const data = []
         transactions.forEach(t => {
@@ -156,7 +158,7 @@ export class TransactionService extends BaseService<Transaction> {
     }
 
     async DoctorTransactionHistory(doctorId: string) {
-        const transactions = await this.transactionRepository.find({ where: { doctor: doctorId } })
+        const transactions = await this.transactionRepository.find({ where: { doctor: doctorId }, order: { created_at: 'asc'} })
         const data = []
         transactions.forEach(t => {
             data.push({
