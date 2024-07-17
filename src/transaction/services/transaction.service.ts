@@ -224,7 +224,7 @@ export class TransactionService extends BaseService<Transaction> {
         await this.transactionRepository.save(transaction)
     }
 
-    async UserCancelConsultation(userId: any, doctor: any, amount: number) {
+    async UserCancelConfirmConsultation(userId: any, doctor: any, amount: number) {
         const user = await this.userRepository.findOneBy({ id: userId.id })
 
         const date = new Date().getTime();
@@ -265,6 +265,29 @@ export class TransactionService extends BaseService<Transaction> {
         await this.transactionRepository.save(user_transaction)
         await this.transactionRepository.save(doctor_transaction)
 
+    }
+
+    async UserCancelConsultation(userId: any, doctor: any, amount: number) {
+        const user = await this.userRepository.findOneBy({ id: userId.id })
+
+        const date = new Date().getTime();
+        const requestId = date + "healthline";
+        const orderId = date + ":healthline";
+
+        const user_transaction = this.transactionRepository.create({
+            amount: amount,
+            orderId: orderId,
+            requestId: requestId,
+            user: user,
+            actor: doctor,
+            typePaid: TypePaid.Receive,
+            isPaid: true,
+            updated_at: this.VNTime(),
+            created_at: this.VNTime()
+        })
+
+        // save transaction
+        await this.transactionRepository.save(user_transaction)
     }
 
     async DoctorFinishedConsultation(doctorId: string, user: any, amount: number) {

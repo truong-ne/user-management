@@ -55,6 +55,15 @@ export class TransactionConsumer {
 
     @RabbitRPC({
         exchange: 'healthline.user.information',
+        routingKey: 'cancel_confirm_transaction', 
+        queue: 'cancel_confirm_transaction',
+    })
+    async UserCancelConfirmConsultation(payload: any): Promise<any> {
+        return await this.transactionService.UserCancelConfirmConsultation(payload.userId, payload.doctor, payload.amount)
+    }
+
+    @RabbitRPC({
+        exchange: 'healthline.user.information',
         routingKey: 'finished_transaction', 
         queue: 'finished_transaction',
     })
